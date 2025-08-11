@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1754885535197" clover="3.2.0">
+  <project timestamp="1754885535197" name="All files">
+    <metrics statements="46" coveredstatements="45" conditionals="12" coveredconditionals="12" methods="24" coveredmethods="23" elements="82" coveredelements="80" complexity="0" loc="46" ncloc="46" packages="3" files="6" classes="6"/>
+    <package name="src">
+      <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <file name="App.tsx" path="/Users/yashtongia/secondary-workspace/Assignment-2/src/App.tsx">
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="6" count="8" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.components.layout">
+      <metrics statements="22" coveredstatements="22" conditionals="12" coveredconditionals="12" methods="4" coveredmethods="4"/>
+      <file name="CanvasPanel.tsx" path="/Users/yashtongia/secondary-workspace/Assignment-2/src/components/layout/CanvasPanel.tsx">
+        <metrics statements="5" coveredstatements="5" conditionals="4" coveredconditionals="4" methods="1" coveredmethods="1"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="11" count="2" type="stmt"/>
+        <line num="12" count="24" type="stmt"/>
+      </file>
+      <file name="MainLayout.tsx" path="/Users/yashtongia/secondary-workspace/Assignment-2/src/components/layout/MainLayout.tsx">
+        <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="10" count="15" type="stmt"/>
+        <line num="12" count="15" type="stmt"/>
+      </file>
+      <file name="PalettePanel.tsx" path="/Users/yashtongia/secondary-workspace/Assignment-2/src/components/layout/PalettePanel.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="4" coveredconditionals="4" methods="1" coveredmethods="1"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="11" count="24" type="stmt"/>
+      </file>
+      <file name="PropertiesPanel.tsx" path="/Users/yashtongia/secondary-workspace/Assignment-2/src/components/layout/PropertiesPanel.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="4" coveredconditionals="4" methods="1" coveredmethods="1"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="11" count="24" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.store">
+      <metrics statements="19" coveredstatements="18" conditionals="0" coveredconditionals="0" methods="19" coveredmethods="18"/>
+      <file name="index.ts" path="/Users/yashtongia/secondary-workspace/Assignment-2/src/store/index.ts">
+        <metrics statements="19" coveredstatements="18" conditionals="0" coveredconditionals="0" methods="19" coveredmethods="18"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
+        <line num="29" count="24" type="stmt"/>
+        <line num="32" count="24" type="stmt"/>
+        <line num="35" count="22" type="stmt"/>
+        <line num="36" count="22" type="stmt"/>
+        <line num="44" count="9" type="stmt"/>
+        <line num="45" count="9" type="stmt"/>
+        <line num="53" count="9" type="stmt"/>
+        <line num="54" count="9" type="stmt"/>
+        <line num="55" count="11" type="stmt"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="76" count="1" type="stmt"/>
+        <line num="77" count="3" type="stmt"/>
+        <line num="78" count="4" type="stmt"/>
+        <line num="84" count="1" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

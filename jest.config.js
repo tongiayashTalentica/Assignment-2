@@ -1,28 +1,25 @@
 export default {
-  preset: 'ts-jest',
-  testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
-  moduleNameMapping: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-    '^@/components/(.*)$': '<rootDir>/src/components/$1',
-    '^@/hooks/(.*)$': '<rootDir>/src/hooks/$1',
-    '^@/store/(.*)$': '<rootDir>/src/store/$1',
-    '^@/utils/(.*)$': '<rootDir>/src/utils/$1',
-    '^@/types/(.*)$': '<rootDir>/src/types/$1',
-    '^@/styles/(.*)$': '<rootDir>/src/styles/$1',
-    '^@/assets/(.*)$': '<rootDir>/src/assets/$1',
-    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+  preset: "ts-jest",
+  testEnvironment: "jsdom", 
+  setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/src/$1",
+    "\\.(css|less|scss|sass)$": "identity-obj-proxy",
+    "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "jest-transform-stub",
   },
   transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', {
-      tsconfig: 'tsconfig.json',
+    "^.+\\.(ts|tsx)$": ["ts-jest", {
+      tsconfig: "tsconfig.json",
     }],
   },
+  transformIgnorePatterns: [
+    "node_modules/(?!(.*\\.mjs$))"
+  ],
   collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/main.tsx',
-    '!src/vite-env.d.ts',
+    "src/**/*.{ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/main.tsx", 
+    "!src/vite-env.d.ts",
   ],
   coverageThreshold: {
     global: {
@@ -33,8 +30,8 @@ export default {
     },
   },
   testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.{ts,tsx}',
-    '<rootDir>/src/**/*.(test|spec).{ts,tsx}',
+    "<rootDir>/src/**/__tests__/**/*.{ts,tsx}",
+    "<rootDir>/src/**/*.(test|spec).{ts,tsx}",
   ],
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
-} 
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
+}

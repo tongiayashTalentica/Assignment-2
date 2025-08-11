@@ -21,7 +21,7 @@ type Store = StoreState & StoreActions
 export const useAppStore = create<Store>()(
   devtools(
     persist(
-      (set, get) => ({
+      (set, _get) => ({
         ...initialState,
 
         // Actions

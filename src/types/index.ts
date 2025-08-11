@@ -9,7 +9,7 @@ export interface AppState {
 // Layout types
 export interface PanelProps {
   className?: string
-  children: ReactNode
+  children?: ReactNode
 }
 
 export interface LayoutConfig {
