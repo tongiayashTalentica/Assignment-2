@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React from 'react'
 import { PanelProps } from '@/types'
 import styles from './Panel.module.css'
@@ -7,7 +6,11 @@ interface PropertiesPanelProps extends PanelProps {
   style?: React.CSSProperties
 }
 
-export const PropertiesPanel = ({ className, children, style }: PropertiesPanelProps) => {
+export const PropertiesPanel = ({
+  className,
+  children,
+  style,
+}: PropertiesPanelProps) => {
   return (
     <div className={`${styles['panel']} ${className || ''}`} style={style}>
       <div className={styles['panelHeader']}>
@@ -25,4 +28,4 @@ export const PropertiesPanel = ({ className, children, style }: PropertiesPanelP
       </div>
     </div>
   )
-} 
+}

@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React from 'react'
 import { useLayout } from '@/store'
 import { PalettePanel } from './PalettePanel'
@@ -14,23 +13,23 @@ export const MainLayout = () => {
       <div className={styles['header']}>
         <h1 className={styles['title']}>Aura No-Code Editor</h1>
       </div>
-      
+
       <div className={styles['content']}>
-        <PalettePanel 
-          className={styles['leftPanel']} 
+        <PalettePanel
+          className={styles['leftPanel']}
           style={{ width: `${layout.leftPanelWidth}%` }}
         />
-        
-        <CanvasPanel 
-          className={styles['centerPanel']} 
+
+        <CanvasPanel
+          className={styles['centerPanel']}
           style={{ width: `${layout.centerPanelWidth}%` }}
         />
-        
-        <PropertiesPanel 
-          className={styles['rightPanel']} 
+
+        <PropertiesPanel
+          className={styles['rightPanel']}
           style={{ width: `${layout.rightPanelWidth}%` }}
         />
       </div>
     </div>
   )
-} 
+}

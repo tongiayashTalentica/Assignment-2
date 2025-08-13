@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React from 'react'
 import { PanelProps } from '@/types'
 import styles from './Panel.module.css'
@@ -8,13 +7,19 @@ interface CanvasPanelProps extends PanelProps {
   style?: React.CSSProperties
 }
 
-export const CanvasPanel = ({ className, children, style }: CanvasPanelProps) => {
+export const CanvasPanel = ({
+  className,
+  children,
+  style,
+}: CanvasPanelProps) => {
   return (
     <div className={`${styles['panel']} ${className || ''}`} style={style}>
       <div className={styles['panelHeader']}>
         <h2 className={styles['panelTitle']}>Canvas</h2>
       </div>
-      <div className={`${styles['panelContent']} ${canvasStyles['canvasContent']}`}>
+      <div
+        className={`${styles['panelContent']} ${canvasStyles['canvasContent']}`}
+      >
         {children || (
           <div className={canvasStyles['canvasArea']}>
             <div className={canvasStyles['canvasPlaceholder']}>
@@ -28,4 +33,4 @@ export const CanvasPanel = ({ className, children, style }: CanvasPanelProps) =>
       </div>
     </div>
   )
-} 
+}
