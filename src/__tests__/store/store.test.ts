@@ -12,13 +12,7 @@ import {
   useHistoryActions,
   usePersistenceActions,
 } from '@/store'
-import {
-  ComponentType,
-  DragType,
-  PanelType,
-  PreviewMode,
-  ModalType,
-} from '@/types'
+import { ComponentType, PanelType, PreviewMode, ModalType } from '@/types'
 import { createComponent } from '@/utils/componentUtils'
 
 // Mock localStorage
@@ -75,7 +69,7 @@ describe('Store - Main Store Tests', () => {
       expect(state.application.canvas.components.size).toBe(0)
       expect(state.application.canvas.selectedComponentIds).toEqual([])
       expect(state.application.canvas.zoom).toBe(1)
-      expect(state.application.ui.dragContext.isDragging).toBe(false)
+      expect(state.application.ui.dragContext.state).toBe('idle')
       expect(state.application.history.canUndo).toBe(false)
       expect(state.application.history.canRedo).toBe(false)
     })
@@ -97,8 +91,8 @@ describe('Store - Main Store Tests', () => {
       const { result } = renderHook(() => useUIState())
       const ui = result.current
 
-      expect(ui.dragContext.isDragging).toBe(false)
-      expect(ui.dragContext.dragType).toBe(DragType.NONE)
+      expect(ui.dragContext.state).toBe('idle')
+      expect(ui.dragContext.draggedComponent).toBe(null)
       expect(ui.activePanel).toBe(PanelType.PALETTE)
       expect(ui.previewMode).toBe(PreviewMode.DESIGN)
       expect(ui.modals.activeModal).toBe(null)
@@ -397,14 +391,14 @@ describe('Store - Main Store Tests', () => {
 
       act(() => {
         result.current.actions.startDrag({
-          dragType: DragType.COMPONENT,
-          draggedComponentId: 'test-component',
+          state: 'dragging_canvas_component',
+          draggedComponent: 'test-component',
         })
       })
 
-      expect(result.current.ui.dragContext.isDragging).toBe(true)
-      expect(result.current.ui.dragContext.dragType).toBe(DragType.COMPONENT)
-      expect(result.current.ui.dragContext.draggedComponentId).toBe(
+      expect(result.current.ui.dragContext.state).not.toBe('idle')
+      expect(result.current.ui.dragContext.draggedComponent).toBeTruthy()
+      expect(result.current.ui.dragContext.draggedComponent).toBe(
         'test-component'
       )
 
@@ -423,8 +417,8 @@ describe('Store - Main Store Tests', () => {
         result.current.actions.endDrag()
       })
 
-      expect(result.current.ui.dragContext.isDragging).toBe(false)
-      expect(result.current.ui.dragContext.dragType).toBe(DragType.NONE)
+      expect(result.current.ui.dragContext.state).toBe('idle')
+      expect(result.current.ui.dragContext.draggedComponent).toBe(null)
     })
 
     it('should manage panel visibility', () => {

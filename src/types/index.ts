@@ -32,6 +32,48 @@ export interface BaseComponent {
   metadata?: ComponentMetadata
 }
 
+// Added: Typed properties for core components
+export type ComponentProperties =
+  | TextProperties
+  | TextAreaProperties
+  | ImageProperties
+  | ButtonProperties
+
+export interface TextProperties {
+  kind: 'text'
+  content: string
+  fontSize: number // 8-72
+  fontWeight: 400 | 700
+  color: string // #RRGGBB
+}
+
+export interface TextAreaProperties {
+  kind: 'textarea'
+  content: string
+  fontSize: number // 8-72
+  color: string // #RRGGBB
+  textAlign: 'left' | 'center' | 'right'
+}
+
+export interface ImageProperties {
+  kind: 'image'
+  src: string
+  alt?: string
+  objectFit: 'cover' | 'contain' | 'fill'
+  borderRadius: number // 0-50
+}
+
+export interface ButtonProperties {
+  kind: 'button'
+  url: string
+  label: string
+  fontSize: number // 8-72
+  padding: number
+  backgroundColor: string // #RRGGBB
+  textColor: string // #RRGGBB
+  borderRadius: number // 0-50
+}
+
 export interface Position {
   x: number
   y: number
@@ -68,6 +110,7 @@ export enum ComponentType {
   FORM = 'form',
   GRID = 'grid',
   FLEX = 'flex',
+  TEXTAREA = 'textarea',
 }
 
 // Canvas state types
@@ -119,15 +162,26 @@ export interface UIState {
   toolbox: ToolboxState
 }
 
+// Enhanced drag-and-drop system types
+export enum DragState {
+  IDLE = 'idle',
+  DRAGGING_FROM_PALETTE = 'dragging_from_palette',
+  DRAGGING_CANVAS_COMPONENT = 'dragging_canvas_component',
+  DRAG_ENDING = 'drag_ending',
+}
+
 export interface DragContext {
-  isDragging: boolean
-  dragType: DragType
-  draggedComponentId?: string
-  draggedComponentType?: ComponentType
-  startPosition?: Position
-  currentPosition?: Position
-  dropZone?: DropZone
+  state: DragState
+  draggedComponent: ComponentType | BaseComponent | null
+  startPosition: Position
+  currentPosition: Position
+  targetElement: HTMLElement | null
+  dragOffset: Position
+  isDragValid: boolean
   dragPreview?: DragPreview
+  dropZone?: DropZone
+  constraints?: DragConstraints
+  performanceData?: DragPerformanceData
 }
 
 export enum DragType {
@@ -143,11 +197,58 @@ export interface DropZone {
   type: 'canvas' | 'container'
   bounds: DOMRect
   isValid: boolean
+  targetComponent?: BaseComponent
 }
 
 export interface DragPreview {
-  component: BaseComponent
+  component: BaseComponent | ComponentType
+  element: HTMLElement | null
   offset: Position
+  ghostElement?: HTMLElement
+}
+
+export interface DragConstraints {
+  boundaries: CanvasBoundaries
+  snapToGrid: boolean
+  gridSize: number
+  minDragDistance: number
+  preventOverlap: boolean
+}
+
+export interface DragPerformanceData {
+  frameCount: number
+  averageFrameTime: number
+  lastFrameTime: number
+  memoryUsage: number
+}
+
+// Event handling types
+export interface NormalizedDragEvent {
+  clientX: number
+  clientY: number
+  pageX: number
+  pageY: number
+  target: EventTarget | null
+  type: 'mouse' | 'touch'
+  identifier?: number
+  preventDefault: () => void
+  stopPropagation: () => void
+}
+
+export interface DragEventHandler {
+  handleDragStart: (event: MouseEvent | TouchEvent) => void
+  handleDragMove: (event: MouseEvent | TouchEvent) => void
+  handleDragEnd: (event: MouseEvent | TouchEvent) => void
+  normalizeEvent: (event: MouseEvent | TouchEvent) => NormalizedDragEvent
+  cleanup: () => void
+}
+
+// Performance monitoring
+export interface DragPerformanceMonitor {
+  startFrameTracking: () => void
+  endFrameTracking: () => void
+  getMetrics: () => DragPerformanceData
+  reset: () => void
 }
 
 export enum PanelType {

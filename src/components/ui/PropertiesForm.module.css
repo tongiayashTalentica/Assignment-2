@@ -1,0 +1,32 @@
+.form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+}
+
+.group {
+  display: contents;
+}
+
+.label {
+  font-size: 12px;
+  color: var(--color-text-light);
+}
+
+.control {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+}
+
+.control[type='range'] {
+  padding: 0;
+}
+
+.full {
+  grid-column: 1 / -1;
+}

@@ -1,8 +1,9 @@
 import React from 'react'
-import { useLayout } from '@/store'
+import { useLayout } from '@/store/simple'
 import { PalettePanel } from './PalettePanel'
 import { CanvasPanel } from './CanvasPanel'
 import { PropertiesPanel } from './PropertiesPanel'
+import { StoreDebug } from '@/components/debug/StoreDebug'
 import styles from './MainLayout.module.css'
 
 export const MainLayout = () => {
@@ -30,6 +31,8 @@ export const MainLayout = () => {
           style={{ width: `${layout.rightPanelWidth}%` }}
         />
       </div>
+
+      <StoreDebug />
     </div>
   )
 }

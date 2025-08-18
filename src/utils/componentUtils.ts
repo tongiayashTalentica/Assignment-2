@@ -68,6 +68,17 @@ export const validateComponent = (
       message: 'Component type is required',
       severity: 'error',
     })
+  } else {
+    // Validate component type is one of the valid enum values
+    const validTypes = Object.values(ComponentType)
+    if (!validTypes.includes(component.type)) {
+      errors.push({
+        componentId: component.id,
+        field: 'type',
+        message: `Invalid component type: ${component.type}. Must be one of: ${validTypes.join(', ')}`,
+        severity: 'error',
+      })
+    }
   }
 
   if (!component.position) {
@@ -361,17 +372,30 @@ export const doComponentsOverlap = (
 export const constrainPositionToBounds = (
   position: Position,
   dimensions: Dimensions,
-  bounds: { minX: number; minY: number; maxX: number; maxY: number }
+  bounds:
+    | { x: number; y: number; width: number; height: number }
+    | { minX: number; minY: number; maxX: number; maxY: number }
 ): Position => {
+  // Handle both bounds formats
+  let minX: number, minY: number, maxX: number, maxY: number
+
+  if ('width' in bounds && 'height' in bounds) {
+    // Format: { x, y, width, height }
+    minX = bounds.x
+    minY = bounds.y
+    maxX = bounds.x + bounds.width
+    maxY = bounds.y + bounds.height
+  } else {
+    // Format: { minX, minY, maxX, maxY }
+    minX = (bounds as any).minX
+    minY = (bounds as any).minY
+    maxX = (bounds as any).maxX
+    maxY = (bounds as any).maxY
+  }
+
   return {
-    x: Math.max(
-      bounds.minX,
-      Math.min(bounds.maxX - dimensions.width, position.x)
-    ),
-    y: Math.max(
-      bounds.minY,
-      Math.min(bounds.maxY - dimensions.height, position.y)
-    ),
+    x: Math.max(minX, Math.min(maxX - dimensions.width, position.x)),
+    y: Math.max(minY, Math.min(maxY - dimensions.height, position.y)),
   }
 }
 
