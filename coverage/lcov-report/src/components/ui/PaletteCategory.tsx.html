@@ -267,10 +267,26 @@
 <a name='L202'></a><a href='#L202'>202</a>
 <a name='L203'></a><a href='#L203'>203</a>
 <a name='L204'></a><a href='#L204'>204</a>
-<a name='L205'></a><a href='#L205'>205</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">8x</span>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a>
+<a name='L209'></a><a href='#L209'>209</a>
+<a name='L210'></a><a href='#L210'>210</a>
+<a name='L211'></a><a href='#L211'>211</a>
+<a name='L212'></a><a href='#L212'>212</a>
+<a name='L213'></a><a href='#L213'>213</a>
+<a name='L214'></a><a href='#L214'>214</a>
+<a name='L215'></a><a href='#L215'>215</a>
+<a name='L216'></a><a href='#L216'>216</a>
+<a name='L217'></a><a href='#L217'>217</a>
+<a name='L218'></a><a href='#L218'>218</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -318,9 +334,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">381x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -348,6 +367,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">381x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -364,6 +384,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -447,6 +471,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -474,7 +500,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState, useCallback, useRef } from 'react'
 import { ComponentType } from '@/types'
 import { ComponentPaletteItem } from './ComponentPaletteItem'
-import { PaletteCategory as CategoryType, COMPONENT_METADATA } from './PaletteState'
+import {
+  PaletteCategory as CategoryType,
+  COMPONENT_METADATA,
+} from './PaletteState'
 &nbsp;
 interface PaletteCategoryProps {
   category: CategoryType
@@ -501,10 +530,10 @@ export const PaletteCategory: React.FC&lt;PaletteCategoryProps&gt; = ({
   // Filter components based on search query
   const filteredComponents = category.components.filter(type =&gt; {
     if (!searchQuery.trim()) return true
-    
+&nbsp;
     const metadata = <span class="cstat-no" title="statement not covered" >COMPONENT_METADATA[type]</span>
     const query = <span class="cstat-no" title="statement not covered" >searchQuery.toLowerCase()</span>
-    
+&nbsp;
 <span class="cstat-no" title="statement not covered" >    return (</span>
       metadata.label.toLowerCase().includes(query) ||
       metadata.description.toLowerCase().includes(query) ||
@@ -521,12 +550,15 @@ export const PaletteCategory: React.FC&lt;PaletteCategoryProps&gt; = ({
     onToggleCollapse(category.id)
   }, [category.id, onToggleCollapse])
 &nbsp;
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) =&gt; {
-    if (event.key === 'Enter' || <span class="branch-1 cbranch-no" title="branch not covered" >event.key === ' ')</span> {
-      event.preventDefault()
-      handleToggleCollapse()
-    }
-  }, [handleToggleCollapse])
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) =&gt; {
+      if (event.key === 'Enter' || <span class="branch-1 cbranch-no" title="branch not covered" >event.key === ' ')</span> {
+        event.preventDefault()
+        handleToggleCollapse()
+      }
+    },
+    [handleToggleCollapse]
+  )
 &nbsp;
   const categoryHeaderStyle: React.CSSProperties = {
     display: 'flex',
@@ -553,7 +585,8 @@ export const PaletteCategory: React.FC&lt;PaletteCategoryProps&gt; = ({
 &nbsp;
   const categoryContentStyle: React.CSSProperties = {
     overflow: 'hidden',
-    transition: 'max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease',
+    transition:
+      'max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease',
     maxHeight: category.isCollapsed ? '0px' : '500px', // Reasonable max height
     opacity: category.isCollapsed ? 0 : 1,
   }
@@ -577,58 +610,62 @@ export const PaletteCategory: React.FC&lt;PaletteCategoryProps&gt; = ({
         data-category-id={category.id}
       &gt;
         {/* Chevron Icon */}
-        &lt;svg 
+        &lt;svg
           style={chevronStyle}
-          fill="none" 
-          stroke="currentColor" 
+          fill="none"
+          stroke="currentColor"
           viewBox="0 0 24 24"
         &gt;
-          &lt;path 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            strokeWidth={2} 
-            d="M19 9l-7 7-7-7" 
+          &lt;path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
           /&gt;
         &lt;/svg&gt;
 &nbsp;
         {/* Category Icon */}
-        &lt;span style={{ fontSize: '16px' }}&gt;
-          {category.icon}
-        &lt;/span&gt;
+        &lt;span style={{ fontSize: '16px' }}&gt;{category.icon}&lt;/span&gt;
 &nbsp;
         {/* Category Label */}
-        &lt;span style={{
-          fontWeight: 600,
-          fontSize: '14px',
-          color: '#374151',
-          flex: 1,
-        }}&gt;
+        &lt;span
+          style={{
+            fontWeight: 600,
+            fontSize: '14px',
+            color: '#374151',
+            flex: 1,
+          }}
+        &gt;
           {category.label}
         &lt;/span&gt;
 &nbsp;
         {/* Component Count */}
-        &lt;span style={{
-          fontSize: '12px',
-          color: '#6b7280',
-          backgroundColor: '#f3f4f6',
-          padding: '2px 6px',
-          borderRadius: '8px',
-          minWidth: '20px',
-          textAlign: 'center',
-        }}&gt;
+        &lt;span
+          style={{
+            fontSize: '12px',
+            color: '#6b7280',
+            backgroundColor: '#f3f4f6',
+            padding: '2px 6px',
+            borderRadius: '8px',
+            minWidth: '20px',
+            textAlign: 'center',
+          }}
+        &gt;
           {filteredComponents.length}
         &lt;/span&gt;
       &lt;/div&gt;
 &nbsp;
       {/* Category Description (when expanded and showing descriptions) */}
       {!category.isCollapsed &amp;&amp; showDescriptions &amp;&amp; (
-        &lt;div style={{
-          fontSize: '12px',
-          color: '#6b7280',
-          marginBottom: '8px',
-          paddingLeft: '32px', // Align with components
-          fontStyle: 'italic',
-        }}&gt;
+        &lt;div
+          style={{
+            fontSize: '12px',
+            color: '#6b7280',
+            marginBottom: '8px',
+            paddingLeft: '32px', // Align with components
+            fontStyle: 'italic',
+          }}
+        &gt;
           {category.description}
         &lt;/div&gt;
       )}
@@ -662,13 +699,15 @@ export const PaletteCategory: React.FC&lt;PaletteCategoryProps&gt; = ({
 &nbsp;
       {/* Empty State for Search */}
       {filteredComponents.length === 0 &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >!searchQuery.trim() </span>&amp;&amp; (
-<span class="branch-2 cbranch-no" title="branch not covered" >        &lt;div style={{</span>
-          padding: '16px',
-          textAlign: 'center',
-          color: '#9ca3af',
-          fontSize: '12px',
-          fontStyle: 'italic',
-        }}&gt;
+<span class="branch-2 cbranch-no" title="branch not covered" >        &lt;div</span>
+          style={{
+            padding: '16px',
+            textAlign: 'center',
+            color: '#9ca3af',
+            fontSize: '12px',
+            fontStyle: 'italic',
+          }}
+        &gt;
           No components in this category
         &lt;/div&gt;
       )}
@@ -682,7 +721,7 @@ export const PaletteCategory: React.FC&lt;PaletteCategoryProps&gt; = ({
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-18T05:57:36.459Z
+                at 2025-08-18T17:10:09.751Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

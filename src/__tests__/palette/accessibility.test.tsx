@@ -5,7 +5,7 @@ import { PalettePanel } from '@/components/layout/PalettePanel'
 import { ComponentType } from '@/types'
 
 // Mock dependencies
-jest.mock('@/store/simple', () => ({
+jest.mock('@/store', () => ({
   useComponentActions: () => ({
     addComponent: jest.fn(),
     selectComponent: jest.fn(),

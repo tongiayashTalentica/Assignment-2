@@ -8,7 +8,7 @@ const mockAddComponent = jest.fn()
 const mockSelectComponent = jest.fn()
 
 // Mock hooks BEFORE importing components to avoid hoisting issues
-jest.mock('@/store/simple', () => ({
+jest.mock('@/store', () => ({
   useComponentActions: () => ({
     addComponent: mockAddComponent,
     selectComponent: mockSelectComponent,
@@ -55,7 +55,7 @@ describe('PalettePanel Drag Functionality', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     ;(usePaletteDraggable as jest.Mock).mockReturnValue(mockDragHandlers)
-    require('@/store/simple').useDragContext.mockReturnValue(mockDragContext)
+    require('@/store').useDragContext.mockReturnValue(mockDragContext)
   })
 
   describe('Component Rendering', () => {
@@ -106,7 +106,7 @@ describe('PalettePanel Drag Functionality', () => {
 
   describe('Visual Feedback During Drag', () => {
     it('should show dragging state visual feedback', () => {
-      require('@/store/simple').useDragContext.mockReturnValue({
+      require('@/store').useDragContext.mockReturnValue({
         ...mockDragContext,
         state: DragState.DRAGGING_FROM_PALETTE,
         draggedComponent: ComponentType.TEXT,
@@ -118,7 +118,7 @@ describe('PalettePanel Drag Functionality', () => {
     })
 
     it('should highlight dragged component item', () => {
-      require('@/store/simple').useDragContext.mockReturnValue({
+      require('@/store').useDragContext.mockReturnValue({
         ...mockDragContext,
         state: DragState.DRAGGING_FROM_PALETTE,
         draggedComponent: ComponentType.TEXT,
@@ -174,7 +174,7 @@ describe('PalettePanel Drag Functionality', () => {
 
   describe('Performance Data Display', () => {
     it('should show performance data during drag operations', () => {
-      require('@/store/simple').useDragContext.mockReturnValue({
+      require('@/store').useDragContext.mockReturnValue({
         ...mockDragContext,
         state: DragState.DRAGGING_FROM_PALETTE,
         performanceData: {
@@ -257,7 +257,7 @@ describe('PalettePanel Drag Functionality', () => {
 
   describe('Edge Cases', () => {
     it('should handle missing drag context gracefully', () => {
-      require('@/store/simple').useDragContext.mockReturnValue(undefined)
+      require('@/store').useDragContext.mockReturnValue(undefined)
 
       expect(() => {
         render(<PalettePanel />)

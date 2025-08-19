@@ -1,11 +1,11 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react'
 import { PanelProps, ComponentType } from '@/types'
 import styles from './Panel.module.css'
-import { useComponentActions, useDragContext } from '@/store/simple'
+import { useComponentActions, useDragContext } from '@/store'
 import { ComponentFactory } from '@/utils/componentFactory'
 import { PaletteCategory } from '@/components/ui/PaletteCategory'
 import { ComponentPaletteItem } from '@/components/ui/ComponentPaletteItem'
-import { usePaletteAccessibility } from '@/hooks/usePaletteAccessibility'
+// import { usePaletteAccessibility } from '@/hooks/usePaletteAccessibility' // For future enhancement
 import {
   DEFAULT_CATEGORIES,
   DEFAULT_PALETTE_STATE,
@@ -39,9 +39,19 @@ export const PalettePanel = ({
   // Handle component addition
   const handleAddComponent = useCallback(
     (type: ComponentType) => {
-      const component = ComponentFactory.create(type, { x: 40, y: 40 })
-      addComponent(component)
-      selectComponent(component.id)
+      console.log('🎯 DEBUG: PalettePanel handleAddComponent called for', type)
+      try {
+        const component = ComponentFactory.create(type, { x: 40, y: 40 })
+        console.log('🎯 DEBUG: Created component in palette:', component)
+        addComponent(component)
+        selectComponent(component.id)
+        console.log('🎯 DEBUG: Component added and selected from palette')
+      } catch (error) {
+        console.error(
+          '🚨 DEBUG: Error in PalettePanel handleAddComponent:',
+          error
+        )
+      }
 
       // Update recent components and interaction history
       setPaletteState(prev => ({
@@ -168,18 +178,17 @@ export const PalettePanel = ({
     }
   }, [])
 
-  // Enhanced accessibility (after callback definitions)
   // Enhanced accessibility (after callback definitions) - currently for future enhancements
-  const _accessibility = usePaletteAccessibility({
-    // eslint-disable-line @typescript-eslint/no-unused-vars
-    containerId: 'palette-panel',
-    onComponentAdd: handleAddComponent,
-    onComponentSelect: handleSelectComponent,
-    onCategoryToggle: handleToggleCategoryCollapse,
-    enableKeyboardDrag: true,
-    enableScreenReader: true,
-    enableFocusTrapping: false, // Allow focus to move to canvas
-  })
+  // Note: Accessibility hooks will be integrated in future enhancements
+  // const _accessibility = usePaletteAccessibility({
+  //   containerId: 'palette-panel',
+  //   onComponentAdd: handleAddComponent,
+  //   onComponentSelect: handleSelectComponent,
+  //   onCategoryToggle: handleToggleCategoryCollapse,
+  //   enableKeyboardDrag: true,
+  //   enableScreenReader: true,
+  //   enableFocusTrapping: false, // Allow focus to move to canvas
+  // })
 
   // Setup keyboard event listener
   useEffect(() => {

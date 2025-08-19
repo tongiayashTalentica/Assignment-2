@@ -6,7 +6,7 @@ import {
   useDropTarget,
 } from '@/hooks/useDragAndDrop'
 import { ComponentType, BaseComponent, DragState } from '@/types'
-import * as storeModule from '@/store/simple'
+import * as storeModule from '@/store'
 
 // Mock the store
 const mockDragContext = {
@@ -33,7 +33,7 @@ const mockActions = {
   selectComponent: jest.fn(),
 }
 
-jest.mock('@/store/simple', () => ({
+jest.mock('@/store', () => ({
   useDragContext: jest.fn(),
   useUIActions: jest.fn(),
   useComponentActions: jest.fn(),

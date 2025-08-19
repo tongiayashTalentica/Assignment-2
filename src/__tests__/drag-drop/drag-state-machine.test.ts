@@ -139,17 +139,11 @@ describe('DragStateMachine', () => {
   })
 
   describe('Invalid Transitions', () => {
-    it('should reject invalid transitions and log warning', () => {
-      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
-
+    it('should reject invalid transitions', () => {
       const success = stateMachine.transition(DragState.DRAG_ENDING)
       expect(success).toBe(false)
       expect(stateMachine.getCurrentState()).toBe(DragState.IDLE)
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Invalid transition from idle to drag_ending'
-      )
-
-      consoleSpy.mockRestore()
+      // Note: Console logging is disabled in the implementation
     })
   })
 

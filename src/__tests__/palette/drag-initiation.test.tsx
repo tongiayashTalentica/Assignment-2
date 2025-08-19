@@ -23,7 +23,7 @@ const mockDragContext = {
   draggedComponent: null,
 }
 
-jest.mock('@/store/simple', () => ({
+jest.mock('@/store', () => ({
   useDragContext: () => mockDragContext,
 }))
 

@@ -231,6 +231,40 @@ const performanceMetrics: PerformanceMetrics = {
 // Store type combining state and actions
 type Store = StoreState & StoreActions
 
+// Helper function to ensure history is properly initialized
+const ensureHistoryInitialized = (state: any) => {
+  // First, ensure the history object exists
+  if (!state.application.history) {
+    console.log('🔧 DEBUG: Initializing missing history object')
+    state.application.history = {
+      past: [],
+      present: createCanvasSnapshot(state.application.canvas, 'Initial state'),
+      future: [],
+      canUndo: false,
+      canRedo: false,
+      maxHistorySize: 50,
+    }
+    return
+  }
+
+  // Then ensure the arrays exist
+  if (!state.application.history.past) {
+    console.log('🔧 DEBUG: Initializing missing history.past array')
+    state.application.history.past = []
+  }
+  if (!state.application.history.future) {
+    console.log('🔧 DEBUG: Initializing missing history.future array')
+    state.application.history.future = []
+  }
+  if (!state.application.history.present) {
+    console.log('🔧 DEBUG: Initializing missing history.present')
+    state.application.history.present = createCanvasSnapshot(
+      state.application.canvas,
+      'Initial state'
+    )
+  }
+}
+
 // Create the store with comprehensive state management
 const storeCreator = (set, get) => {
   // Ensure initial state has proper Map
@@ -311,7 +345,9 @@ const storeCreator = (set, get) => {
           state.application.persistence.isDirty = true
 
           if (addToHistory) {
-            // Add to history
+            // Add to history - ensure history is properly initialized
+            ensureHistoryInitialized(state)
+
             const snapshot = createCanvasSnapshot(
               state.application.canvas,
               `Added ${component.type} component`
@@ -369,6 +405,7 @@ const storeCreator = (set, get) => {
 
             if (addToHistory) {
               // Add to history
+              ensureHistoryInitialized(state)
               const snapshot = createCanvasSnapshot(
                 state.application.canvas,
                 `Removed component`
@@ -419,6 +456,7 @@ const storeCreator = (set, get) => {
 
             if (addToHistory) {
               // Add to history
+              ensureHistoryInitialized(state)
               const snapshot = createCanvasSnapshot(
                 state.application.canvas,
                 `Updated component properties`
@@ -468,6 +506,7 @@ const storeCreator = (set, get) => {
 
             if (addToHistory) {
               // Add to history
+              ensureHistoryInitialized(state)
               const snapshot = createCanvasSnapshot(
                 state.application.canvas,
                 `Duplicated component`
@@ -584,6 +623,7 @@ const storeCreator = (set, get) => {
 
             if (addToHistory) {
               // Add to history
+              ensureHistoryInitialized(state)
               const snapshot = createCanvasSnapshot(
                 state.application.canvas,
                 `Moved component`
@@ -643,6 +683,7 @@ const storeCreator = (set, get) => {
 
             if (addToHistory) {
               // Add to history
+              ensureHistoryInitialized(state)
               const snapshot = createCanvasSnapshot(
                 state.application.canvas,
                 `Resized component`
@@ -682,6 +723,7 @@ const storeCreator = (set, get) => {
 
             if (addToHistory) {
               // Add to history
+              ensureHistoryInitialized(state)
               const snapshot = createCanvasSnapshot(
                 state.application.canvas,
                 `Reordered component`
@@ -887,6 +929,7 @@ const storeCreator = (set, get) => {
     undo: () =>
       set(
         state => {
+          ensureHistoryInitialized(state)
           if (state.application.history.past.length > 0) {
             const previous = state.application.history.past.pop()!
             state.application.history.future.unshift(
@@ -918,6 +961,7 @@ const storeCreator = (set, get) => {
     redo: () =>
       set(
         state => {
+          ensureHistoryInitialized(state)
           if (state.application.history.future.length > 0) {
             const next = state.application.history.future.shift()!
             state.application.history.past.push(
@@ -949,6 +993,7 @@ const storeCreator = (set, get) => {
     addToHistory: (description?: string) =>
       set(
         state => {
+          ensureHistoryInitialized(state)
           const snapshot = createCanvasSnapshot(
             state.application.canvas,
             description
@@ -974,6 +1019,7 @@ const storeCreator = (set, get) => {
     clearHistory: () =>
       set(
         state => {
+          ensureHistoryInitialized(state)
           state.application.history.past = []
           state.application.history.future = []
           state.application.history.canUndo = false
@@ -986,6 +1032,7 @@ const storeCreator = (set, get) => {
     setMaxHistorySize: (size: number) =>
       set(
         state => {
+          ensureHistoryInitialized(state)
           state.application.history.maxHistorySize = Math.max(1, size)
 
           // Trim history if necessary
@@ -1001,6 +1048,7 @@ const storeCreator = (set, get) => {
     takeSnapshot: (description: string) =>
       set(
         state => {
+          ensureHistoryInitialized(state)
           const snapshot = createCanvasSnapshot(
             state.application.canvas,
             description
@@ -1318,15 +1366,29 @@ const storeCreator = (set, get) => {
     },
 
     sanitizeState: () => {
-      // Placeholder for state sanitization
+      // State sanitization and recovery
       const state = get()
       if (!(state.application.canvas.components instanceof Map)) {
+        console.warn('Detected corrupted components state, recovering...')
         set(
           draft => {
-            draft.application.canvas.components = new Map()
+            // Try to recover data if it's in array format
+            const current = draft.application.canvas.components
+            if (Array.isArray(current)) {
+              console.log('Attempting to recover components from array format')
+              draft.application.canvas.components = new Map(current)
+            } else if (current && typeof current === 'object') {
+              console.log('Attempting to recover components from object format')
+              draft.application.canvas.components = new Map(
+                Object.entries(current)
+              )
+            } else {
+              console.log('Initializing empty components Map')
+              draft.application.canvas.components = new Map()
+            }
           },
           false,
-          'sanitizeState'
+          'sanitizeState:recover'
         )
       }
     },
@@ -1352,7 +1414,11 @@ export const useAppStore = create<Store>()(
             const incoming = deserialized.canvas
             // Ensure components is always a Map
             if (incoming.components && !(incoming.components instanceof Map)) {
-              incoming.components = new Map()
+              // Convert stored array back to Map if needed
+              const componentsArray = Array.isArray(incoming.components)
+                ? incoming.components
+                : []
+              incoming.components = new Map(componentsArray)
             }
             // Only replace canvas if current has no components to avoid clobbering user actions during hydration
             if (!current || current.components.size === 0) {
@@ -1374,10 +1440,25 @@ export const useAppStore = create<Store>()(
 // Performance-optimized selectors
 export const useCanvas = () => useAppStore(state => state.application.canvas)
 export const useComponents = () =>
-  useAppStore(state => state.application.canvas.components)
+  useAppStore(state => {
+    const components = state.application.canvas.components
+    // Safety check: ensure components is always a Map
+    if (!(components instanceof Map)) {
+      console.warn('Components is not a Map, initializing new Map')
+      return new Map()
+    }
+    return components
+  })
 export const useSelectedComponents = () =>
   useAppStore(state => {
     const { components, selectedComponentIds } = state.application.canvas
+    // Safety check: ensure components is always a Map
+    if (!(components instanceof Map)) {
+      console.warn(
+        'Components is not a Map in useSelectedComponents, returning empty array'
+      )
+      return []
+    }
     return selectedComponentIds
       .map(id => components.get(id))
       .filter((component): component is BaseComponent => Boolean(component))
@@ -1385,6 +1466,13 @@ export const useSelectedComponents = () =>
 export const useFocusedComponent = () =>
   useAppStore(state => {
     const { components, focusedComponentId } = state.application.canvas
+    // Safety check: ensure components is always a Map
+    if (!(components instanceof Map)) {
+      console.warn(
+        'Components is not a Map in useFocusedComponent, returning null'
+      )
+      return null
+    }
     return focusedComponentId
       ? components.get(focusedComponentId) || null
       : null
@@ -1507,5 +1595,15 @@ export const setupAutoSave = () => {
   }
 }
 
-// Initialize auto-save on store creation
+// Initialize auto-save and sanitize state on store creation
 setupAutoSave()
+
+// Immediately sanitize state to handle any corruption from localStorage
+setTimeout(() => {
+  try {
+    useAppStore.getState().sanitizeState()
+    console.log('✅ Store state sanitized successfully')
+  } catch (error) {
+    console.error('❌ Error during initial state sanitization:', error)
+  }
+}, 100)

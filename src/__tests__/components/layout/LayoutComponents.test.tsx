@@ -7,7 +7,7 @@ import { PalettePanel } from '@/components/layout/PalettePanel'
 import { PropertiesPanel } from '@/components/layout/PropertiesPanel'
 
 // Mock the store
-jest.mock('@/store/simple', () => ({
+jest.mock('@/store', () => ({
   useLayout: jest.fn(() => ({
     leftPanelWidth: 20,
     centerPanelWidth: 60,
@@ -40,9 +40,17 @@ jest.mock('@/store/simple', () => ({
   useCanvas: jest.fn(() => ({
     boundaries: { minX: 0, minY: 0, maxX: 1200, maxY: 800 },
     grid: { snapToGrid: false, size: 20 },
+    dimensions: { width: 1200, height: 800 },
     zoom: 1,
     canUndo: false,
     canRedo: false,
+  })),
+  useCanvasActions: jest.fn(() => ({
+    setZoom: jest.fn(),
+    updateGrid: jest.fn(),
+    updateCanvasDimensions: jest.fn(),
+    updateViewport: jest.fn(),
+    setBoundaries: jest.fn(),
   })),
 }))
 
@@ -126,7 +134,7 @@ describe('Layout Components', () => {
     })
 
     it('should use layout hook for panel widths', () => {
-      const { useLayout } = require('@/store/simple')
+      const { useLayout } = require('@/store')
       render(<MainLayout />)
 
       expect(useLayout).toHaveBeenCalled()

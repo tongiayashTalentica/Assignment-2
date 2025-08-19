@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useState, useCallback, useRef } from 'react'
 import { BaseComponent, ComponentType, DragState } from '@/types'
-import { useComponentActions, useDragContext } from '@/store/simple'
+import { useComponentActions, useDragContext } from '@/store'
 import { useCanvasDraggable } from '@/hooks/useDragAndDrop'
 
 interface Props {
@@ -9,190 +9,548 @@ interface Props {
   onSelect: (id: string) => void
 }
 
-export const ComponentRenderer = ({
-  component,
-  isSelected,
-  onSelect,
-}: Props) => {
-  const { selectComponent, focusComponent } = useComponentActions()
-  const dragContext = useDragContext()
-  const { id, type, position, dimensions, props } = component
+export const ComponentRenderer = React.memo(
+  ({ component, isSelected, onSelect }: Props) => {
+    const {
+      selectComponent,
+      focusComponent,
+      resizeComponent,
+      reorderComponent,
+    } = useComponentActions()
+    const dragContext = useDragContext()
+    const { id, type, position, dimensions, props } = component
+    const [isHovered, setIsHovered] = useState(false)
+    const [isResizing, setIsResizing] = useState(false)
+    const componentRef = useRef<HTMLDivElement>(null)
 
-  const dragHandlers = useCanvasDraggable(component)
+    const dragHandlers = useCanvasDraggable(component)
 
-  const isDragging =
-    dragContext?.state === DragState.DRAGGING_CANVAS_COMPONENT &&
-    (dragContext.draggedComponent as BaseComponent)?.id === id
+    // Resize functionality - only for Image components
+    const handleResizeStart = useCallback(
+      (e: React.MouseEvent, direction: string) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setIsResizing(true)
 
-  // Use current drag position if dragging, otherwise use component position
-  const displayPosition =
-    isDragging && dragContext?.currentPosition
-      ? dragContext.currentPosition
-      : position
+        const startX = e.clientX
+        const startY = e.clientY
+        const startWidth = dimensions.width
+        const startHeight = dimensions.height
 
-  const style: React.CSSProperties = {
-    position: 'absolute',
-    left: displayPosition.x,
-    top: displayPosition.y,
-    width: dimensions.width,
-    height: dimensions.height,
-    outline: isDragging
-      ? '2px solid #3b82f6'
-      : isSelected
+        const handleMouseMove = (e: MouseEvent) => {
+          const deltaX = e.clientX - startX
+          const deltaY = e.clientY - startY
+
+          let newWidth = startWidth
+          let newHeight = startHeight
+
+          switch (direction) {
+            case 'se': // Southeast - bottom right
+              newWidth = Math.max(50, startWidth + deltaX)
+              newHeight = Math.max(30, startHeight + deltaY)
+              break
+            case 'sw': // Southwest - bottom left
+              newWidth = Math.max(50, startWidth - deltaX)
+              newHeight = Math.max(30, startHeight + deltaY)
+              break
+            case 'ne': // Northeast - top right
+              newWidth = Math.max(50, startWidth + deltaX)
+              newHeight = Math.max(30, startHeight - deltaY)
+              break
+            case 'nw': // Northwest - top left
+              newWidth = Math.max(50, startWidth - deltaX)
+              newHeight = Math.max(30, startHeight - deltaY)
+              break
+            case 'e': // East - right
+              newWidth = Math.max(50, startWidth + deltaX)
+              break
+            case 'w': // West - left
+              newWidth = Math.max(50, startWidth - deltaX)
+              break
+            case 's': // South - bottom
+              newHeight = Math.max(30, startHeight + deltaY)
+              break
+            case 'n': // North - top
+              newHeight = Math.max(30, startHeight - deltaY)
+              break
+          }
+
+          resizeComponent(
+            id,
+            {
+              width: newWidth,
+              height: newHeight,
+              minWidth: 50,
+              minHeight: 30,
+            },
+            false
+          ) // Don't add to history during resize
+        }
+
+        const handleMouseUp = () => {
+          setIsResizing(false)
+          document.removeEventListener('mousemove', handleMouseMove)
+          document.removeEventListener('mouseup', handleMouseUp)
+          // Add final state to history
+          resizeComponent(
+            id,
+            {
+              width: dimensions.width,
+              height: dimensions.height,
+              minWidth: 50,
+              minHeight: 30,
+            },
+            true
+          )
+        }
+
+        document.addEventListener('mousemove', handleMouseMove)
+        document.addEventListener('mouseup', handleMouseUp)
+      },
+      [id, dimensions, resizeComponent]
+    )
+
+    // Layer controls
+    const bringToFront = useCallback(
+      (e: React.MouseEvent) => {
+        e.stopPropagation()
+        // Find max z-index and add 1
+        reorderComponent(id, component.zIndex + 1)
+      },
+      [id, component.zIndex, reorderComponent]
+    )
+
+    const sendToBack = useCallback(
+      (e: React.MouseEvent) => {
+        e.stopPropagation()
+        reorderComponent(id, Math.max(0, component.zIndex - 1))
+      },
+      [id, component.zIndex, reorderComponent]
+    )
+
+    const isDragging =
+      dragContext?.state === DragState.DRAGGING_CANVAS_COMPONENT &&
+      (dragContext.draggedComponent as BaseComponent)?.id === id
+
+    // Use current drag position if dragging, otherwise use component position
+    const displayPosition =
+      isDragging && dragContext?.currentPosition
+        ? dragContext.currentPosition
+        : position
+
+    const style: React.CSSProperties = {
+      position: 'absolute',
+      left: displayPosition.x,
+      top: displayPosition.y,
+      width: dimensions.width,
+      height: dimensions.height,
+      outline: isDragging
         ? '2px solid #3b82f6'
-        : '1px solid #e5e7eb',
-    borderRadius: (props as any).borderRadius ?? 0,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: type === ComponentType.TEXTAREA ? 'flex-start' : 'center',
-    padding: type === ComponentType.BUTTON ? (props as any).padding : 0,
-    overflow: 'hidden',
-    background:
-      type === ComponentType.BUTTON
-        ? (props as any).backgroundColor
-        : isDragging
-          ? 'rgba(59, 130, 246, 0.1)'
-          : 'transparent',
-    color: (props as any).color || (props as any).textColor || '#000',
-    fontSize: (props as any).fontSize || 16,
-    fontWeight: (props as any).fontWeight || 400,
-    textAlign: (props as any).textAlign || 'left',
-    cursor: isDragging ? 'grabbing' : isSelected ? 'grab' : 'pointer',
-    opacity: isDragging ? 0.8 : 1,
-    transform: 'scale(1)', // Keep consistent scale, no rotation
-    transition: isDragging ? 'none' : 'all 0.2s ease',
-    zIndex: isDragging ? 1000 : component.zIndex,
-    userSelect: 'none',
-    boxShadow: isDragging
-      ? '0 8px 25px rgba(0,0,0,0.25)'
-      : isSelected
-        ? '0 2px 8px rgba(59, 130, 246, 0.3)'
-        : 'none',
-  }
-
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
-
-    // Don't handle selection during drag operations
-    if (dragContext.state !== 'idle') {
-      return
+        : isSelected
+          ? '2px solid #3b82f6'
+          : isHovered
+            ? '1px solid #3b82f6'
+            : '1px solid #e5e7eb',
+      borderRadius: (props as any).borderRadius ?? 0,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: type === ComponentType.TEXTAREA ? 'flex-start' : 'center',
+      padding: type === ComponentType.BUTTON ? (props as any).padding : 0,
+      overflow: 'visible', // Changed to show resize handles
+      background:
+        type === ComponentType.BUTTON
+          ? (props as any).backgroundColor
+          : isDragging
+            ? 'rgba(59, 130, 246, 0.1)'
+            : isHovered
+              ? 'rgba(59, 130, 246, 0.05)'
+              : 'transparent',
+      color: (props as any).color || (props as any).textColor || '#000',
+      fontSize: (props as any).fontSize || 16,
+      fontWeight: (props as any).fontWeight || 400,
+      textAlign: (props as any).textAlign || 'left',
+      cursor: isDragging
+        ? 'grabbing'
+        : isResizing
+          ? 'resize'
+          : isSelected || isHovered
+            ? 'grab'
+            : 'pointer',
+      opacity: isDragging ? 0.8 : 1,
+      transform: 'scale(1)', // Keep consistent scale, no rotation
+      transition: isDragging || isResizing ? 'none' : 'all 0.2s ease',
+      zIndex: isDragging
+        ? 1000
+        : isSelected
+          ? component.zIndex + 100
+          : component.zIndex,
+      userSelect: 'none',
+      boxShadow: isDragging
+        ? '0 8px 25px rgba(0,0,0,0.25)'
+        : isSelected
+          ? '0 2px 8px rgba(59, 130, 246, 0.3)'
+          : isHovered
+            ? '0 2px 4px rgba(59, 130, 246, 0.2)'
+            : 'none',
     }
 
-    onSelect(id)
-    selectComponent(id)
-    focusComponent(id)
-  }
+    const handleClick = (e: React.MouseEvent) => {
+      e.stopPropagation()
 
-  const baseProps = {
-    ...dragHandlers, // Put drag handlers FIRST so they take precedence
-    style,
-    onClick: handleClick,
-    'data-testid': `component-${id}`,
-    'data-component-id': id,
-    'data-draggable': 'canvas',
-    draggable: false, // Disable native browser drag
-    onDragStart: (e: React.DragEvent) => e.preventDefault(), // Prevent any native drag
-  }
+      // Don't handle selection during drag operations
+      if (dragContext.state !== 'idle') {
+        return
+      }
 
-  // Add visual feedback for draggable state
-  const draggableIndicator =
-    isSelected && !isDragging && dragContext.state === DragState.IDLE ? (
-      <div
-        style={{
-          position: 'absolute',
-          top: '-8px',
-          left: '-8px',
-          width: '18px',
-          height: '18px',
-          backgroundColor: '#3b82f6',
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '12px',
-          color: 'white',
-          cursor: 'grab',
-          userSelect: 'none',
-          zIndex: 1001,
-          boxShadow: '0 2px 8px rgba(59, 130, 246, 0.4)',
-          border: '2px solid white',
-        }}
-        title="Click and drag to move component"
-      >
-        ⋮⋮
-      </div>
-    ) : null
+      onSelect(id)
+      selectComponent(id)
+      focusComponent(id)
+    }
 
-  // Add drag status indicator - simplified and less intrusive
-  const dragStatusIndicator = null // Removed for cleaner experience
+    const handleMouseEnter = useCallback(() => {
+      if (dragContext.state === 'idle') {
+        setIsHovered(true)
+      }
+    }, [dragContext.state])
 
-  switch (type) {
-    case ComponentType.TEXT:
-      return (
-        <div {...baseProps}>
-          {dragStatusIndicator}
-          {draggableIndicator}
-          {(props as any).content}
+    const handleMouseLeave = useCallback(() => {
+      setIsHovered(false)
+    }, [])
+
+    // Resize handles for Image components
+    const resizeHandles =
+      isSelected && type === ComponentType.IMAGE && !isDragging ? (
+        <>
+          {/* Corner handles */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '-4px',
+              left: '-4px',
+              width: '8px',
+              height: '8px',
+              backgroundColor: '#3b82f6',
+              cursor: 'nw-resize',
+              borderRadius: '2px',
+              border: '1px solid white',
+            }}
+            onMouseDown={e => handleResizeStart(e, 'nw')}
+            title="Resize northwest"
+          />
+          <div
+            style={{
+              position: 'absolute',
+              top: '-4px',
+              right: '-4px',
+              width: '8px',
+              height: '8px',
+              backgroundColor: '#3b82f6',
+              cursor: 'ne-resize',
+              borderRadius: '2px',
+              border: '1px solid white',
+            }}
+            onMouseDown={e => handleResizeStart(e, 'ne')}
+            title="Resize northeast"
+          />
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '-4px',
+              left: '-4px',
+              width: '8px',
+              height: '8px',
+              backgroundColor: '#3b82f6',
+              cursor: 'sw-resize',
+              borderRadius: '2px',
+              border: '1px solid white',
+            }}
+            onMouseDown={e => handleResizeStart(e, 'sw')}
+            title="Resize southwest"
+          />
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '-4px',
+              right: '-4px',
+              width: '8px',
+              height: '8px',
+              backgroundColor: '#3b82f6',
+              cursor: 'se-resize',
+              borderRadius: '2px',
+              border: '1px solid white',
+            }}
+            onMouseDown={e => handleResizeStart(e, 'se')}
+            title="Resize southeast"
+          />
+
+          {/* Edge handles */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '-4px',
+              width: '8px',
+              height: '16px',
+              backgroundColor: '#3b82f6',
+              cursor: 'w-resize',
+              borderRadius: '2px',
+              border: '1px solid white',
+              transform: 'translateY(-50%)',
+            }}
+            onMouseDown={e => handleResizeStart(e, 'w')}
+            title="Resize west"
+          />
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              right: '-4px',
+              width: '8px',
+              height: '16px',
+              backgroundColor: '#3b82f6',
+              cursor: 'e-resize',
+              borderRadius: '2px',
+              border: '1px solid white',
+              transform: 'translateY(-50%)',
+            }}
+            onMouseDown={e => handleResizeStart(e, 'e')}
+            title="Resize east"
+          />
+          <div
+            style={{
+              position: 'absolute',
+              top: '-4px',
+              left: '50%',
+              width: '16px',
+              height: '8px',
+              backgroundColor: '#3b82f6',
+              cursor: 'n-resize',
+              borderRadius: '2px',
+              border: '1px solid white',
+              transform: 'translateX(-50%)',
+            }}
+            onMouseDown={e => handleResizeStart(e, 'n')}
+            title="Resize north"
+          />
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '-4px',
+              left: '50%',
+              width: '16px',
+              height: '8px',
+              backgroundColor: '#3b82f6',
+              cursor: 's-resize',
+              borderRadius: '2px',
+              border: '1px solid white',
+              transform: 'translateX(-50%)',
+            }}
+            onMouseDown={e => handleResizeStart(e, 's')}
+            title="Resize south"
+          />
+        </>
+      ) : null
+
+    const baseProps = {
+      ...dragHandlers, // Put drag handlers FIRST so they take precedence
+      ref: componentRef,
+      style,
+      onClick: handleClick,
+      onMouseEnter: handleMouseEnter,
+      onMouseLeave: handleMouseLeave,
+      'data-testid': `component-${id}`,
+      'data-component-id': id,
+      'data-draggable': 'canvas',
+      'data-hovered': isHovered,
+      'data-resizing': isResizing,
+      draggable: false, // Disable native browser drag
+      onDragStart: (e: React.DragEvent) => e.preventDefault(), // Prevent any native drag
+    }
+
+    // Add visual feedback for draggable state
+    const draggableIndicator =
+      isSelected && !isDragging && dragContext.state === DragState.IDLE ? (
+        <div
+          style={{
+            position: 'absolute',
+            top: '-8px',
+            left: '-8px',
+            width: '18px',
+            height: '18px',
+            backgroundColor: '#3b82f6',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '10px',
+            color: 'white',
+            cursor: 'grab',
+            userSelect: 'none',
+            zIndex: 1001,
+            boxShadow: '0 2px 8px rgba(59, 130, 246, 0.4)',
+            border: '2px solid white',
+          }}
+          title="Click and drag to move component"
+        >
+          ⋮⋮
         </div>
-      )
-    case ComponentType.TEXTAREA:
-      return (
-        <div {...baseProps}>
-          {dragStatusIndicator}
-          {draggableIndicator}
-          <div style={{ whiteSpace: 'pre-wrap', padding: 8, width: '100%' }}>
+      ) : null
+
+    // Layer controls for selected components
+    const layerControls =
+      isSelected && !isDragging && dragContext.state === DragState.IDLE ? (
+        <div
+          style={{
+            position: 'absolute',
+            top: '-30px',
+            right: '-8px',
+            display: 'flex',
+            gap: '2px',
+            zIndex: 1001,
+          }}
+        >
+          <button
+            onClick={bringToFront}
+            style={{
+              width: '20px',
+              height: '20px',
+              backgroundColor: '#059669',
+              border: '1px solid white',
+              borderRadius: '4px',
+              color: 'white',
+              fontSize: '10px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+            }}
+            title="Bring to front"
+          >
+            ↑
+          </button>
+          <button
+            onClick={sendToBack}
+            style={{
+              width: '20px',
+              height: '20px',
+              backgroundColor: '#f59e0b',
+              border: '1px solid white',
+              borderRadius: '4px',
+              color: 'white',
+              fontSize: '10px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+            }}
+            title="Send to back"
+          >
+            ↓
+          </button>
+        </div>
+      ) : null
+
+    // Component info tooltip (only on hover)
+    const infoTooltip =
+      isHovered && !isDragging ? (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            color: 'white',
+            padding: '4px 8px',
+            borderRadius: '4px',
+            fontSize: '11px',
+            whiteSpace: 'nowrap',
+            zIndex: 1002,
+            marginBottom: '4px',
+            pointerEvents: 'none',
+          }}
+        >
+          {type.charAt(0).toUpperCase() + type.slice(1)} • {dimensions.width}×
+          {dimensions.height} • z:{component.zIndex}
+        </div>
+      ) : null
+
+    switch (type) {
+      case ComponentType.TEXT:
+        return (
+          <div {...baseProps}>
+            {infoTooltip}
+            {draggableIndicator}
+            {layerControls}
             {(props as any).content}
           </div>
-        </div>
-      )
-    case ComponentType.IMAGE:
-      return (
-        <div {...baseProps}>
-          {dragStatusIndicator}
-          {draggableIndicator}
-          <img
-            src={(props as any).src}
-            alt={(props as any).alt || ''}
-            draggable={false} // Explicitly disable native drag
-            onDragStart={e => e.preventDefault()} // Prevent any drag events
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: (props as any).objectFit,
-              pointerEvents: 'none', // Prevent image drag interference
-              userSelect: 'none', // Prevent selection
-            }}
-          />
-        </div>
-      )
-    case ComponentType.BUTTON:
-      return (
-        <div {...baseProps}>
-          {dragStatusIndicator}
-          {draggableIndicator}
-          <a
-            href={(props as any).url}
-            draggable={false} // Disable native drag
-            onDragStart={e => e.preventDefault()} // Prevent drag events
-            style={{
-              textDecoration: 'none',
-              color: 'inherit',
-              pointerEvents: isDragging ? 'none' : 'auto',
-              userSelect: 'none', // Prevent text selection
-            }}
-            onClick={e => e.preventDefault()}
-          >
-            {(props as any).label}
-          </a>
-        </div>
-      )
-    default:
-      return (
-        <div {...baseProps}>
-          {dragStatusIndicator}
-          {draggableIndicator}
-          Unsupported
-        </div>
-      )
+        )
+      case ComponentType.TEXTAREA:
+        return (
+          <div {...baseProps}>
+            {infoTooltip}
+            {draggableIndicator}
+            {layerControls}
+            <div style={{ whiteSpace: 'pre-wrap', padding: 8, width: '100%' }}>
+              {(props as any).content}
+            </div>
+          </div>
+        )
+      case ComponentType.IMAGE:
+        return (
+          <div {...baseProps}>
+            {infoTooltip}
+            {draggableIndicator}
+            {layerControls}
+            {resizeHandles}
+            <img
+              src={(props as any).src}
+              alt={(props as any).alt || ''}
+              draggable={false} // Explicitly disable native drag
+              onDragStart={e => e.preventDefault()} // Prevent any drag events
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: (props as any).objectFit,
+                pointerEvents: 'none', // Prevent image drag interference
+                userSelect: 'none', // Prevent selection
+              }}
+            />
+          </div>
+        )
+      case ComponentType.BUTTON:
+        return (
+          <div {...baseProps}>
+            {infoTooltip}
+            {draggableIndicator}
+            {layerControls}
+            <a
+              href={(props as any).url}
+              draggable={false} // Disable native drag
+              onDragStart={e => e.preventDefault()} // Prevent drag events
+              style={{
+                textDecoration: 'none',
+                color: 'inherit',
+                pointerEvents: isDragging ? 'none' : 'auto',
+                userSelect: 'none', // Prevent text selection
+              }}
+              onClick={e => e.preventDefault()}
+            >
+              {(props as any).label}
+            </a>
+          </div>
+        )
+      default:
+        return (
+          <div {...baseProps}>
+            {infoTooltip}
+            {draggableIndicator}
+            {layerControls}
+            Unsupported
+          </div>
+        )
+    }
   }
-}
+)

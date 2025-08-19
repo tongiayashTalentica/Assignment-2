@@ -4,7 +4,7 @@ import {
   useUIActions,
   useComponentActions,
   useCanvas,
-} from '@/store/simple'
+} from '@/store'
 import { DragState, ComponentType, BaseComponent, Position } from '@/types'
 import { ComponentFactory } from '@/utils/componentFactory'
 
@@ -211,6 +211,7 @@ export const useDragAndDrop = () => {
       componentType: ComponentType,
       event: React.MouseEvent | React.TouchEvent
     ) => {
+      console.log('🎯 DEBUG: Starting palette drag for', componentType)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const _event = event
       startDrag({
@@ -221,6 +222,10 @@ export const useDragAndDrop = () => {
         dragOffset: { x: 0, y: 0 },
         isDragValid: true,
       })
+      console.log(
+        '🎯 DEBUG: Palette drag started, state should be:',
+        DragState.DRAGGING_FROM_PALETTE
+      )
     },
     [startDrag]
   )
@@ -251,10 +256,20 @@ export const useDragAndDrop = () => {
    */
   const handleDrop = useCallback(
     (dropEvent: { clientX: number; clientY: number; canvasRect?: DOMRect }) => {
-      if (dragContext.state === DragState.IDLE) return
+      console.log('🎯 DEBUG: handleDrop called', {
+        dragState: dragContext.state,
+        dropEvent,
+        draggedComponent: dragContext.draggedComponent,
+      })
+
+      if (dragContext.state === DragState.IDLE) {
+        console.log('🎯 DEBUG: Drag state is IDLE, ignoring drop')
+        return
+      }
 
       try {
         if (dragContext.state === DragState.DRAGGING_FROM_PALETTE) {
+          console.log('🎯 DEBUG: Processing palette drop')
           // Create new component from palette
           const componentType = dragContext.draggedComponent as ComponentType
           if (componentType && dropEvent.canvasRect) {
@@ -262,20 +277,33 @@ export const useDragAndDrop = () => {
               x: dropEvent.clientX - dropEvent.canvasRect.left,
               y: dropEvent.clientY - dropEvent.canvasRect.top,
             }
+            console.log('🎯 DEBUG: Canvas position calculated:', canvasPosition)
 
             const constrainedPosition = constrainPosition(canvasPosition)
+            console.log('🎯 DEBUG: Constrained position:', constrainedPosition)
+
             const newComponent = ComponentFactory.create(
               componentType,
               constrainedPosition
             )
+            console.log('🎯 DEBUG: Created component:', newComponent)
 
             addComponent(newComponent)
             selectComponent(newComponent.id)
+            console.log('🎯 DEBUG: Component added and selected')
+          } else {
+            console.log('🚨 DEBUG: Missing componentType or canvasRect:', {
+              componentType,
+              canvasRect: dropEvent.canvasRect,
+            })
           }
         }
         // Canvas component drops are handled by the useEffect above
+      } catch (error) {
+        console.error('🚨 DEBUG: Error in handleDrop:', error)
       } finally {
         if (dragContext.state === DragState.DRAGGING_FROM_PALETTE) {
+          console.log('🎯 DEBUG: Ending drag')
           endDrag()
         }
       }
@@ -333,17 +361,28 @@ export const usePaletteDraggable = (componentType: ComponentType) => {
 
   return {
     onMouseDown: (event: React.MouseEvent) => {
+      console.log(
+        '🎯 DEBUG: usePaletteDraggable onMouseDown for',
+        componentType
+      )
       event.preventDefault()
       event.stopPropagation()
       startPaletteDrag(componentType, event)
     },
     onTouchStart: (event: React.TouchEvent) => {
+      console.log(
+        '🎯 DEBUG: usePaletteDraggable onTouchStart for',
+        componentType
+      )
       event.preventDefault()
       event.stopPropagation()
       startPaletteDrag(componentType, event)
     },
     draggable: false,
-    onDragStart: (e: React.DragEvent) => e.preventDefault(),
+    onDragStart: (e: React.DragEvent) => {
+      console.log('🎯 DEBUG: usePaletteDraggable onDragStart (prevented)')
+      e.preventDefault()
+    },
     'data-draggable': 'palette',
     'data-component-type': componentType,
   }
@@ -416,7 +455,12 @@ export const useDropTarget = () => {
 
   return {
     onMouseUp: (event: React.MouseEvent) => {
-      if (dragState !== DragState.DRAGGING_FROM_PALETTE) return
+      console.log('🎯 DEBUG: useDropTarget onMouseUp', { dragState })
+
+      if (dragState !== DragState.DRAGGING_FROM_PALETTE) {
+        console.log('🎯 DEBUG: Not in DRAGGING_FROM_PALETTE state, ignoring')
+        return
+      }
 
       event.preventDefault()
       event.stopPropagation()
@@ -429,12 +473,18 @@ export const useDropTarget = () => {
         y: event.clientY - canvasRect.top,
       }
 
+      console.log('🎯 DEBUG: Drop position calculated:', dropPosition)
+      console.log('🎯 DEBUG: Canvas rect:', canvasRect)
+
       if (isValidDropTarget(dropPosition)) {
+        console.log('🎯 DEBUG: Drop position is valid, calling handleDrop')
         handleDrop({
           clientX: event.clientX,
           clientY: event.clientY,
           canvasRect,
         })
+      } else {
+        console.log('🚨 DEBUG: Drop position is not valid')
       }
     },
     onTouchEnd: (event: React.TouchEvent) => {

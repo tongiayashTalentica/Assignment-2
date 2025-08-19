@@ -5,7 +5,7 @@ import { ComponentType } from '@/types'
 
 // Mock the store hooks
 const mockUpdateComponent = jest.fn()
-jest.mock('@/store/simple', () => ({
+jest.mock('@/store', () => ({
   useComponentActions: () => ({
     updateComponent: mockUpdateComponent,
   }),

@@ -1,7 +1,7 @@
 import React from 'react'
 import { PanelProps } from '@/types'
 import styles from './Panel.module.css'
-import { useFocusedComponent, useSelectedComponents } from '@/store/simple'
+import { useFocusedComponent, useSelectedComponents } from '@/store'
 import { PropertiesForm } from '@/components/ui/PropertiesForm'
 
 interface PropertiesPanelProps extends PanelProps {

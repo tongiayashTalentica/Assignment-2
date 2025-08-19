@@ -19,11 +19,13 @@ jest.mock('@/components/ui/ComponentRenderer', () => ({
 }))
 
 // Mock hooks
-jest.mock('@/store/simple', () => ({
+jest.mock('@/store', () => ({
   useComponents: jest.fn(),
   useSelectedComponents: jest.fn(),
   useComponentActions: jest.fn(),
   useDragContext: jest.fn(),
+  useCanvas: jest.fn(),
+  useCanvasActions: jest.fn(),
 }))
 
 jest.mock('@/hooks/useDragAndDrop', () => ({
@@ -79,14 +81,26 @@ describe('CanvasPanel Drop Functionality', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    require('@/store/simple').useComponents.mockReturnValue(mockComponents)
-    require('@/store/simple').useSelectedComponents.mockReturnValue(
+    require('@/store').useComponents.mockReturnValue(mockComponents)
+    require('@/store').useSelectedComponents.mockReturnValue(
       mockSelectedComponents
     )
-    require('@/store/simple').useDragContext.mockReturnValue(mockDragContext)
-    require('@/store/simple').useComponentActions.mockReturnValue(
-      mockComponentActions
-    )
+    require('@/store').useDragContext.mockReturnValue(mockDragContext)
+    require('@/store').useComponentActions.mockReturnValue(mockComponentActions)
+    require('@/store').useCanvas.mockReturnValue({
+      zoom: 1,
+      dimensions: { width: 1200, height: 800 },
+      grid: { visible: true, size: 20, snapToGrid: true },
+      boundaries: { minX: 0, minY: 0, maxX: 1200, maxY: 800 },
+      viewport: { x: 0, y: 0, width: 1200, height: 800 },
+    })
+    require('@/store').useCanvasActions.mockReturnValue({
+      setZoom: jest.fn(),
+      updateGrid: jest.fn(),
+      updateCanvasDimensions: jest.fn(),
+      updateViewport: jest.fn(),
+      setBoundaries: jest.fn(),
+    })
     ;(useDropTarget as jest.Mock).mockReturnValue(mockDropHandlers)
   })
 
@@ -122,8 +136,8 @@ describe('CanvasPanel Drop Functionality', () => {
   describe('Drop Zone Visual Feedback', () => {
     it('should show drop zone feedback during palette drag', () => {
       // Clear components and set drag state for empty canvas drag feedback
-      require('@/store/simple').useComponents.mockReturnValue(new Map())
-      require('@/store/simple').useDragContext.mockReturnValue({
+      require('@/store').useComponents.mockReturnValue(new Map())
+      require('@/store').useDragContext.mockReturnValue({
         ...mockDragContext,
         state: DragState.DRAGGING_FROM_PALETTE,
       })
@@ -140,8 +154,8 @@ describe('CanvasPanel Drop Functionality', () => {
 
     it('should apply pulse animation class during drag', () => {
       // Clear components and set drag state for empty canvas drag feedback
-      require('@/store/simple').useComponents.mockReturnValue(new Map())
-      require('@/store/simple').useDragContext.mockReturnValue({
+      require('@/store').useComponents.mockReturnValue(new Map())
+      require('@/store').useDragContext.mockReturnValue({
         ...mockDragContext,
         state: DragState.DRAGGING_FROM_PALETTE,
       })
@@ -156,8 +170,8 @@ describe('CanvasPanel Drop Functionality', () => {
 
     it('should not show drop zone feedback when idle', () => {
       // Clear components for empty canvas
-      require('@/store/simple').useComponents.mockReturnValue(new Map())
-      require('@/store/simple').useDragContext.mockReturnValue({
+      require('@/store').useComponents.mockReturnValue(new Map())
+      require('@/store').useDragContext.mockReturnValue({
         ...mockDragContext,
         state: 'idle',
       })
@@ -184,7 +198,7 @@ describe('CanvasPanel Drop Functionality', () => {
     })
 
     it('should show empty state when no components', () => {
-      require('@/store/simple').useComponents.mockReturnValue(new Map())
+      require('@/store').useComponents.mockReturnValue(new Map())
 
       render(<CanvasPanel />)
 
@@ -217,7 +231,7 @@ describe('CanvasPanel Drop Functionality', () => {
     })
 
     it('should not clear selection during drag operations', () => {
-      require('@/store/simple').useDragContext.mockReturnValue({
+      require('@/store').useDragContext.mockReturnValue({
         ...mockDragContext,
         state: DragState.DRAGGING_CANVAS_COMPONENT,
       })
@@ -260,7 +274,7 @@ describe('CanvasPanel Drop Functionality', () => {
 
   describe('Performance Monitoring', () => {
     it('should show FPS counter during drag operations', () => {
-      require('@/store/simple').useDragContext.mockReturnValue({
+      require('@/store').useDragContext.mockReturnValue({
         ...mockDragContext,
         state: DragState.DRAGGING_CANVAS_COMPONENT,
         performanceData: {
@@ -283,7 +297,7 @@ describe('CanvasPanel Drop Functionality', () => {
     })
 
     it('should calculate FPS correctly from performance data', () => {
-      require('@/store/simple').useDragContext.mockReturnValue({
+      require('@/store').useDragContext.mockReturnValue({
         ...mockDragContext,
         state: DragState.DRAGGING_CANVAS_COMPONENT,
         performanceData: {
@@ -327,7 +341,7 @@ describe('CanvasPanel Drop Functionality', () => {
 
   describe('Drop Target Data Attributes', () => {
     it('should have correct drag state data attribute', () => {
-      require('@/store/simple').useDragContext.mockReturnValue({
+      require('@/store').useDragContext.mockReturnValue({
         ...mockDragContext,
         state: DragState.DRAGGING_FROM_PALETTE,
       })
@@ -345,7 +359,7 @@ describe('CanvasPanel Drop Functionality', () => {
 
   describe('Edge Cases', () => {
     it('should handle empty component map gracefully', () => {
-      require('@/store/simple').useComponents.mockReturnValue(new Map())
+      require('@/store').useComponents.mockReturnValue(new Map())
 
       expect(() => {
         render(<CanvasPanel />)
@@ -353,7 +367,7 @@ describe('CanvasPanel Drop Functionality', () => {
     })
 
     it('should handle missing drag context gracefully', () => {
-      require('@/store/simple').useDragContext.mockReturnValue(undefined)
+      require('@/store').useDragContext.mockReturnValue(undefined)
 
       expect(() => {
         render(<CanvasPanel />)
@@ -372,9 +386,7 @@ describe('CanvasPanel Drop Functionality', () => {
         ],
       ])
 
-      require('@/store/simple').useComponents.mockReturnValue(
-        incompleteComponent
-      )
+      require('@/store').useComponents.mockReturnValue(incompleteComponent)
 
       expect(() => {
         render(<CanvasPanel />)
@@ -382,7 +394,7 @@ describe('CanvasPanel Drop Functionality', () => {
     })
 
     it('should handle selection array with undefined components', () => {
-      require('@/store/simple').useSelectedComponents.mockReturnValue([
+      require('@/store').useSelectedComponents.mockReturnValue([
         undefined,
         null,
       ])
@@ -396,8 +408,8 @@ describe('CanvasPanel Drop Functionality', () => {
   describe('Drop Zone Animation States', () => {
     it('should show different messages based on drag state', () => {
       // Test idle state with empty canvas
-      require('@/store/simple').useComponents.mockReturnValue(new Map())
-      require('@/store/simple').useDragContext.mockReturnValue({
+      require('@/store').useComponents.mockReturnValue(new Map())
+      require('@/store').useDragContext.mockReturnValue({
         ...mockDragContext,
         state: 'idle',
       })
@@ -407,7 +419,7 @@ describe('CanvasPanel Drop Functionality', () => {
       ).toBeInTheDocument()
 
       // Test dragging state with empty canvas
-      require('@/store/simple').useDragContext.mockReturnValue({
+      require('@/store').useDragContext.mockReturnValue({
         ...mockDragContext,
         state: DragState.DRAGGING_FROM_PALETTE,
       })

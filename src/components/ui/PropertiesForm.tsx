@@ -1,6 +1,6 @@
 import React from 'react'
 import { BaseComponent, ComponentProperties, ComponentType } from '@/types'
-import { useComponentActions } from '@/store/simple'
+import { useComponentActions } from '@/store'
 import { ComponentFactory } from '@/utils/componentFactory'
 import styles from './PropertiesForm.module.css'
 

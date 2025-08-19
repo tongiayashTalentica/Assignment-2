@@ -1,5 +1,5 @@
 import React from 'react'
-import { useLayout } from '@/store/simple'
+import { useLayout } from '@/store'
 import { PalettePanel } from './PalettePanel'
 import { CanvasPanel } from './CanvasPanel'
 import { PropertiesPanel } from './PropertiesPanel'

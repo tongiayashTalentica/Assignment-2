@@ -5,7 +5,7 @@ import { ComponentPreview } from '@/components/ui/ComponentPreview'
 import { ComponentType } from '@/types'
 
 // Mock dependencies
-jest.mock('@/store/simple', () => ({
+jest.mock('@/store', () => ({
   useComponentActions: () => ({
     addComponent: jest.fn(),
     selectComponent: jest.fn(),
@@ -358,7 +358,7 @@ describe('Palette Responsive Design', () => {
   describe('Performance Debug Info Layout', () => {
     test('debug info has appropriate spacing and styling', () => {
       // Mock drag context with performance data
-      jest.doMock('@/store/simple', () => ({
+      jest.doMock('@/store', () => ({
         useComponentActions: () => ({
           addComponent: jest.fn(),
           selectComponent: jest.fn(),

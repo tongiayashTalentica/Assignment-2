@@ -4,7 +4,7 @@ import { ComponentRenderer } from '@/components/ui/ComponentRenderer'
 import { ComponentType, BaseComponent } from '@/types'
 
 // Mock store hooks
-jest.mock('@/store/simple', () => ({
+jest.mock('@/store', () => ({
   useComponentActions: () => ({
     selectComponent: jest.fn(),
     focusComponent: jest.fn(),

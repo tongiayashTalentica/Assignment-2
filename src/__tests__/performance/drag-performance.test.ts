@@ -36,7 +36,7 @@ const mockUIActions = {
   endDrag: jest.fn(),
 }
 
-jest.mock('@/store/simple', () => ({
+jest.mock('@/store', () => ({
   useDragContext: jest.fn(() => ({
     state: 'idle',
     draggedComponent: null,
@@ -73,11 +73,9 @@ describe('Drag-and-Drop Performance Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     ;(performance.now as jest.Mock).mockReturnValue(0)
-    require('@/store/simple').useCanvas.mockReturnValue(mockCanvas)
-    require('@/store/simple').useUIActions.mockReturnValue(mockUIActions)
-    require('@/store/simple').useComponentActions.mockReturnValue(
-      mockComponentActions
-    )
+    require('@/store').useCanvas.mockReturnValue(mockCanvas)
+    require('@/store').useUIActions.mockReturnValue(mockUIActions)
+    require('@/store').useComponentActions.mockReturnValue(mockComponentActions)
   })
 
   describe('Frame Rate Performance', () => {
@@ -92,7 +90,7 @@ describe('Drag-and-Drop Performance Tests', () => {
         dragOffset: { x: 10, y: 10 },
       }
 
-      require('@/store/simple').useDragContext.mockReturnValue(mockDragContext)
+      require('@/store').useDragContext.mockReturnValue(mockDragContext)
 
       const { rerender: _rerender } = renderHook(() => useDragAndDrop()) // eslint-disable-line @typescript-eslint/no-unused-vars
 
@@ -147,7 +145,7 @@ describe('Drag-and-Drop Performance Tests', () => {
         draggedComponent: ComponentType.TEXT,
       }
 
-      require('@/store/simple').useDragContext.mockReturnValue(mockDragContext)
+      require('@/store').useDragContext.mockReturnValue(mockDragContext)
       renderHook(() => useDragAndDrop())
 
       const rapidEvents = 100
@@ -184,7 +182,7 @@ describe('Drag-and-Drop Performance Tests', () => {
         dragOffset: { x: 0, y: 0 },
       }
 
-      require('@/store/simple').useDragContext.mockReturnValue(mockDragContext)
+      require('@/store').useDragContext.mockReturnValue(mockDragContext)
 
       const { unmount } = renderHook(() => useDragAndDrop())
 
@@ -222,7 +220,7 @@ describe('Drag-and-Drop Performance Tests', () => {
         draggedComponent: ComponentType.TEXT,
       }
 
-      require('@/store/simple').useDragContext.mockReturnValue(mockDragContext)
+      require('@/store').useDragContext.mockReturnValue(mockDragContext)
 
       const { unmount } = renderHook(() => useDragAndDrop())
 
@@ -250,14 +248,14 @@ describe('Drag-and-Drop Performance Tests', () => {
         state: DragState.IDLE,
       }
 
-      require('@/store/simple').useDragContext.mockReturnValue(mockDragContext)
+      require('@/store').useDragContext.mockReturnValue(mockDragContext)
 
       const { result: _result, rerender } = renderHook(() => useDragAndDrop()) // eslint-disable-line @typescript-eslint/no-unused-vars
 
       // Simulate multiple drag operations
       for (let i = 0; i < 10; i++) {
         // Start drag
-        require('@/store/simple').useDragContext.mockReturnValue({
+        require('@/store').useDragContext.mockReturnValue({
           state: DragState.DRAGGING_FROM_PALETTE,
           draggedComponent: ComponentType.TEXT,
         })
@@ -265,7 +263,7 @@ describe('Drag-and-Drop Performance Tests', () => {
         rerender()
 
         // End drag
-        require('@/store/simple').useDragContext.mockReturnValue({
+        require('@/store').useDragContext.mockReturnValue({
           state: DragState.IDLE,
         })
 
@@ -285,7 +283,7 @@ describe('Drag-and-Drop Performance Tests', () => {
         draggedComponent: ComponentType.TEXT,
       }
 
-      require('@/store/simple').useDragContext.mockReturnValue(mockDragContext)
+      require('@/store').useDragContext.mockReturnValue(mockDragContext)
       renderHook(() => useDragAndDrop())
 
       // Create spy on DOM manipulation
@@ -318,7 +316,7 @@ describe('Drag-and-Drop Performance Tests', () => {
         draggedComponent: ComponentType.TEXT,
       }
 
-      require('@/store/simple').useDragContext.mockReturnValue(mockDragContext)
+      require('@/store').useDragContext.mockReturnValue(mockDragContext)
       renderHook(() => useDragAndDrop())
 
       // Trigger preview creation
@@ -355,7 +353,7 @@ describe('Drag-and-Drop Performance Tests', () => {
         })
       }
 
-      require('@/store/simple').useCanvas.mockReturnValue({
+      require('@/store').useCanvas.mockReturnValue({
         ...mockCanvas,
         components: largeComponentSet,
       })
@@ -390,7 +388,7 @@ describe('Drag-and-Drop Performance Tests', () => {
         dragOffset: { x: 10, y: 10 },
       }
 
-      require('@/store/simple').useDragContext.mockReturnValue(mockDragContext)
+      require('@/store').useDragContext.mockReturnValue(mockDragContext)
 
       const { result } = renderHook(() => useDragAndDrop())
 
@@ -435,7 +433,7 @@ describe('Drag-and-Drop Performance Tests', () => {
         },
       }
 
-      require('@/store/simple').useDragContext.mockReturnValue(mockDragContext)
+      require('@/store').useDragContext.mockReturnValue(mockDragContext)
       renderHook(() => useDragAndDrop())
 
       // Simulate frame timing

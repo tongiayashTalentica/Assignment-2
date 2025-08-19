@@ -4,7 +4,7 @@ import { PalettePanel } from '@/components/layout/PalettePanel'
 // ComponentType import removed - not used
 
 // Mock the store hooks
-jest.mock('@/store/simple', () => ({
+jest.mock('@/store', () => ({
   useComponentActions: () => ({
     addComponent: jest.fn(),
     selectComponent: jest.fn(),

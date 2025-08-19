@@ -4,7 +4,7 @@ import { PalettePanel } from '@/components/layout/PalettePanel'
 import { CanvasPanel } from '@/components/layout/CanvasPanel'
 import { ComponentRenderer } from '@/components/ui/ComponentRenderer'
 import { ComponentType, DragState } from '@/types'
-import { useAppStore } from '@/store/simple'
+import { useAppStore } from '@/store'
 
 // Mock drag-drop hooks
 jest.mock('@/hooks/useDragAndDrop', () => ({
@@ -45,7 +45,7 @@ jest.mock('@/hooks/useDragAndDrop', () => ({
     }),
   })),
   useCanvasDraggable: jest.fn(component => ({
-    onMouseDown: jest.fn(_e => {
+    onMouseDown: jest.fn(e => {
       // Only handle left-click (button 0), ignore right-click
       if (e.button !== 0) return
 
@@ -94,7 +94,7 @@ jest.mock('@/hooks/useDragAndDrop', () => ({
 }))
 
 // Mock store for integration tests
-jest.mock('@/store/simple', () => {
+jest.mock('@/store', () => {
   const mockStore = {
     application: {
       canvas: {
@@ -143,7 +143,18 @@ jest.mock('@/store/simple', () => {
       updateDrag: mockStore.updateDrag,
       endDrag: mockStore.endDrag,
     })),
-    useCanvas: jest.fn(() => mockStore.application.canvas),
+    useCanvas: jest.fn(() => ({
+      ...mockStore.application.canvas,
+      dimensions: { width: 800, height: 600 },
+      zoom: 1,
+    })),
+    useCanvasActions: jest.fn(() => ({
+      setZoom: jest.fn(),
+      updateGrid: jest.fn(),
+      updateCanvasDimensions: jest.fn(),
+      updateViewport: jest.fn(),
+      setBoundaries: jest.fn(),
+    })),
   }
 })
 

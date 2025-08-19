@@ -4,7 +4,7 @@ import {
   useUIActions,
   useDragContext,
   useCanvas,
-} from '@/store/simple'
+} from '@/store'
 import { ComponentType, DragState } from '@/types'
 import { ComponentFactory } from '@/utils/componentFactory'
 

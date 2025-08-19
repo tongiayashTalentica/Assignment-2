@@ -337,7 +337,24 @@
 <a name='L272'></a><a href='#L272'>272</a>
 <a name='L273'></a><a href='#L273'>273</a>
 <a name='L274'></a><a href='#L274'>274</a>
-<a name='L275'></a><a href='#L275'>275</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">9x</span>
+<a name='L275'></a><a href='#L275'>275</a>
+<a name='L276'></a><a href='#L276'>276</a>
+<a name='L277'></a><a href='#L277'>277</a>
+<a name='L278'></a><a href='#L278'>278</a>
+<a name='L279'></a><a href='#L279'>279</a>
+<a name='L280'></a><a href='#L280'>280</a>
+<a name='L281'></a><a href='#L281'>281</a>
+<a name='L282'></a><a href='#L282'>282</a>
+<a name='L283'></a><a href='#L283'>283</a>
+<a name='L284'></a><a href='#L284'>284</a>
+<a name='L285'></a><a href='#L285'>285</a>
+<a name='L286'></a><a href='#L286'>286</a>
+<a name='L287'></a><a href='#L287'>287</a>
+<a name='L288'></a><a href='#L288'>288</a>
+<a name='L289'></a><a href='#L289'>289</a>
+<a name='L290'></a><a href='#L290'>290</a>
+<a name='L291'></a><a href='#L291'>291</a>
+<a name='L292'></a><a href='#L292'>292</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-yes">9x</span>
@@ -373,8 +390,8 @@
 <span class="cline-any cline-yes">574x</span>
 <span class="cline-any cline-yes">574x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">574x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">574x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">574x</span>
@@ -405,6 +422,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">574x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
@@ -422,6 +440,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -611,11 +631,25 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState, useCallback, useRef, useEffect } from 'react'
 import { ComponentType } from '@/types'
 import { ComponentPreview } from './ComponentPreview'
 import { usePaletteDraggable } from '@/hooks/useDragAndDrop'
-import { useDragContext } from '@/store/simple'
+import { useDragContext } from '@/store'
 &nbsp;
 interface ComponentPaletteItemProps {
   type: ComponentType
@@ -633,7 +667,7 @@ export const ComponentPaletteItem: React.FC&lt;ComponentPaletteItemProps&gt; = (
   type,
   label,
   description,
-  category,
+  category: _category,
   onAdd,
   onSelect,
   isSelected = false,
@@ -646,9 +680,9 @@ export const ComponentPaletteItem: React.FC&lt;ComponentPaletteItemProps&gt; = (
   const dragContext = useDragContext()
   const itemRef = useRef&lt;HTMLDivElement&gt;(null)
   const tooltipTimeoutRef = useRef&lt;NodeJS.Timeout&gt;()
-  
-  const isDragging = dragContext?.state !== 'idle' &amp;&amp; 
-                    dragContext?.draggedComponent === type
+&nbsp;
+  const isDragging =
+    dragContext?.state !== 'idle' &amp;&amp; dragContext?.draggedComponent === type
 &nbsp;
   // Tooltip management
   const handleMouseEnter = useCallback(() =&gt; {
@@ -678,26 +712,29 @@ export const ComponentPaletteItem: React.FC&lt;ComponentPaletteItemProps&gt; = (
   }, [])
 &nbsp;
   // Handle keyboard interactions
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) =&gt; {
-    if (disabled) return
-    
-    switch (event.key) {
-      case 'Enter':
-      case ' ':
-        event.preventDefault()
-        if (event.shiftKey) {
-          onSelect?.()
-        } else {
-          onAdd()
-        }
-        break
-<span class="branch-2 cbranch-no" title="branch not covered" >      case 'ArrowDown':</span>
-<span class="branch-3 cbranch-no" title="branch not covered" >      case 'ArrowUp':</span>
-<span class="cstat-no" title="statement not covered" >        event.preventDefault()</span>
-        // Navigation will be handled by the parent palette component
-<span class="cstat-no" title="statement not covered" >        break</span>
-    }
-  }, [disabled, onAdd, onSelect])
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) =&gt; {
+      if (disabled) return
+&nbsp;
+      switch (event.key) {
+        case 'Enter':
+        case ' ':
+          event.preventDefault()
+          if (event.shiftKey) {
+            onSelect?.()
+          } else {
+            onAdd()
+          }
+          break
+<span class="branch-2 cbranch-no" title="branch not covered" >        case 'ArrowDown':</span>
+<span class="branch-3 cbranch-no" title="branch not covered" >        case 'ArrowUp':</span>
+<span class="cstat-no" title="statement not covered" >          event.preventDefault()</span>
+          // Navigation will be handled by the parent palette component
+<span class="cstat-no" title="statement not covered" >          break</span>
+      }
+    },
+    [disabled, onAdd, onSelect]
+  )
 &nbsp;
   // Handle focus management
   const handleFocus = useCallback(() =&gt; {
@@ -788,61 +825,73 @@ export const ComponentPaletteItem: React.FC&lt;ComponentPaletteItemProps&gt; = (
         data-testid={`palette-item-${type.toLowerCase()}`}
         {...(disabled ? {} : dragHandlers)}
         draggable={false}
-        onDragStart={(e) =&gt; e.preventDefault()}
+        onDragStart={e =&gt; e.preventDefault()}
       &gt;
         {/* Component Preview */}
         &lt;ComponentPreview type={type} size="medium" /&gt;
-        
+&nbsp;
         {/* Component Info */}
         &lt;div style={{ flex: 1, minWidth: 0 }}&gt;
-          &lt;div style={{
-            fontWeight: 600,
-            fontSize: '14px',
-            color: disabled ? '#9ca3af' : '#374151',
-            marginBottom: '2px',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}&gt;
+          &lt;div
+            style={{
+              fontWeight: 600,
+              fontSize: '14px',
+              color: disabled ? '#9ca3af' : '#374151',
+              marginBottom: '2px',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          &gt;
             {label}
           &lt;/div&gt;
-          &lt;div style={{
-            fontSize: '12px',
-            color: disabled ? '#9ca3af' : '#6b7280',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}&gt;
+          &lt;div
+            style={{
+              fontSize: '12px',
+              color: disabled ? '#9ca3af' : '#6b7280',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          &gt;
             {description}
           &lt;/div&gt;
         &lt;/div&gt;
 &nbsp;
         {/* Drag Indicator */}
-        &lt;div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '2px',
-          opacity: disabled ? 0.3 : isHovered ? 1 : 0.5,
-          transition: 'opacity 0.2s ease',
-        }}&gt;
-          &lt;div style={{
-            width: '3px',
-            height: '3px',
-            backgroundColor: '#9ca3af',
-            borderRadius: '50%',
-          }} /&gt;
-          &lt;div style={{
-            width: '3px',
-            height: '3px',
-            backgroundColor: '#9ca3af',
-            borderRadius: '50%',
-          }} /&gt;
-          &lt;div style={{
-            width: '3px',
-            height: '3px',
-            backgroundColor: '#9ca3af',
-            borderRadius: '50%',
-          }} /&gt;
+        &lt;div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '2px',
+            opacity: disabled ? 0.3 : isHovered ? 1 : 0.5,
+            transition: 'opacity 0.2s ease',
+          }}
+        &gt;
+          &lt;div
+            style={{
+              width: '3px',
+              height: '3px',
+              backgroundColor: '#9ca3af',
+              borderRadius: '50%',
+            }}
+          /&gt;
+          &lt;div
+            style={{
+              width: '3px',
+              height: '3px',
+              backgroundColor: '#9ca3af',
+              borderRadius: '50%',
+            }}
+          /&gt;
+          &lt;div
+            style={{
+              width: '3px',
+              height: '3px',
+              backgroundColor: '#9ca3af',
+              borderRadius: '50%',
+            }}
+          /&gt;
         &lt;/div&gt;
       &lt;/div&gt;
 &nbsp;
@@ -869,17 +918,19 @@ export const ComponentPaletteItem: React.FC&lt;ComponentPaletteItemProps&gt; = (
           }}
         &gt;
           Drag to canvas, double-click to add, or use Shift+D for keyboard drag
-          &lt;div style={{
-            position: 'absolute',
-            top: '100%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: 0,
-            height: 0,
-            borderLeft: '4px solid transparent',
-            borderRight: '4px solid transparent',
-            borderTop: '4px solid #1f2937',
-          }} /&gt;
+          &lt;div
+            style={{
+              position: 'absolute',
+              top: '100%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 0,
+              height: 0,
+              borderLeft: '4px solid transparent',
+              borderRight: '4px solid transparent',
+              borderTop: '4px solid #1f2937',
+            }}
+          /&gt;
         &lt;/div&gt;
       )}
     &lt;/&gt;
@@ -892,7 +943,7 @@ export const ComponentPaletteItem: React.FC&lt;ComponentPaletteItemProps&gt; = (
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-18T05:57:36.459Z
+                at 2025-08-18T17:10:09.751Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

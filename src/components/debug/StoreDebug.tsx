@@ -1,5 +1,5 @@
 import React from 'react'
-import { useComponents, useDragContext, useCanvas } from '@/store/simple'
+import { useComponents, useDragContext, useCanvas } from '@/store'
 
 export const StoreDebug = () => {
   const components = useComponents()

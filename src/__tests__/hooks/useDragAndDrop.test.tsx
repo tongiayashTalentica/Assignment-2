@@ -14,7 +14,7 @@ import { DragState, ComponentType } from '@/types'
 import { ComponentFactory } from '@/utils/componentFactory'
 
 // Mock store hooks
-jest.mock('@/store/simple', () => ({
+jest.mock('@/store', () => ({
   useDragContext: jest.fn(),
   useUIActions: jest.fn(),
   useComponentActions: jest.fn(),
@@ -57,12 +57,10 @@ describe('useDragAndDrop Hook', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    require('@/store/simple').useDragContext.mockReturnValue(mockDragContext)
-    require('@/store/simple').useUIActions.mockReturnValue(mockUIActions)
-    require('@/store/simple').useComponentActions.mockReturnValue(
-      mockComponentActions
-    )
-    require('@/store/simple').useCanvas.mockReturnValue(mockCanvas)
+    require('@/store').useDragContext.mockReturnValue(mockDragContext)
+    require('@/store').useUIActions.mockReturnValue(mockUIActions)
+    require('@/store').useComponentActions.mockReturnValue(mockComponentActions)
+    require('@/store').useCanvas.mockReturnValue(mockCanvas)
   })
 
   describe('Hook Initialization', () => {
@@ -84,7 +82,7 @@ describe('useDragAndDrop Hook', () => {
     })
 
     it('should correctly identify dragging state', () => {
-      require('@/store/simple').useDragContext.mockReturnValue({
+      require('@/store').useDragContext.mockReturnValue({
         ...mockDragContext,
         state: DragState.DRAGGING_FROM_PALETTE,
       })
@@ -152,7 +150,7 @@ describe('useDragAndDrop Hook', () => {
     })
 
     it('should handle drop from palette', () => {
-      require('@/store/simple').useDragContext.mockReturnValue({
+      require('@/store').useDragContext.mockReturnValue({
         ...mockDragContext,
         state: DragState.DRAGGING_FROM_PALETTE,
         draggedComponent: ComponentType.TEXT,
@@ -247,7 +245,7 @@ describe('useDragAndDrop Hook', () => {
     })
 
     it('should create drag preview for palette drag', () => {
-      require('@/store/simple').useDragContext.mockReturnValue({
+      require('@/store').useDragContext.mockReturnValue({
         ...mockDragContext,
         state: DragState.DRAGGING_FROM_PALETTE,
         draggedComponent: ComponentType.TEXT,
@@ -269,7 +267,7 @@ describe('useDragAndDrop Hook', () => {
     })
 
     it('should clean up drag preview on component unmount', () => {
-      require('@/store/simple').useDragContext.mockReturnValue({
+      require('@/store').useDragContext.mockReturnValue({
         ...mockDragContext,
         state: DragState.DRAGGING_FROM_PALETTE,
         draggedComponent: ComponentType.TEXT,
@@ -295,7 +293,7 @@ describe('useDragAndDrop Hook', () => {
 
   describe('Edge Cases', () => {
     it('should handle drop with no canvas rect', () => {
-      require('@/store/simple').useDragContext.mockReturnValue({
+      require('@/store').useDragContext.mockReturnValue({
         ...mockDragContext,
         state: DragState.DRAGGING_FROM_PALETTE,
         draggedComponent: ComponentType.TEXT,

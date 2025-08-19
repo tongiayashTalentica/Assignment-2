@@ -26,7 +26,7 @@ const mockActions = {
   focusComponent: jest.fn(),
 }
 
-jest.mock('@/store/simple', () => {
+jest.mock('@/store', () => {
   const testComponent = {
     id: 'z',
     type: 'text', // Use lowercase to match ComponentType.TEXT enum value
@@ -53,6 +53,22 @@ jest.mock('@/store/simple', () => {
     useDragContext: jest.fn(() => ({
       state: 'idle',
       draggedComponent: null,
+      dragOffset: { x: 0, y: 0 },
+      dragStartPosition: { x: 0, y: 0 },
+    })),
+    useCanvas: jest.fn(() => ({
+      zoom: 1,
+      dimensions: { width: 1200, height: 800 },
+      grid: { visible: true, size: 20, snapToGrid: true },
+      boundaries: { minX: 0, minY: 0, maxX: 1200, maxY: 800 },
+      viewport: { x: 0, y: 0, width: 1200, height: 800 },
+    })),
+    useCanvasActions: jest.fn(() => ({
+      setZoom: jest.fn(),
+      updateGrid: jest.fn(),
+      updateCanvasDimensions: jest.fn(),
+      updateViewport: jest.fn(),
+      setBoundaries: jest.fn(),
     })),
   }
 })

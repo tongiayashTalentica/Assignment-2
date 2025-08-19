@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react'
 import { ComponentType } from '@/types'
 import { ComponentPreview } from './ComponentPreview'
-import { usePaletteDraggable } from '@/hooks/useDragAndDrop'
-import { useDragContext } from '@/store/simple'
+import { usePaletteDraggable, useDragAndDrop } from '@/hooks/useDragAndDrop'
+import { useDragContext } from '@/store'
 
 interface ComponentPaletteItemProps {
   type: ComponentType
@@ -30,6 +30,7 @@ export const ComponentPaletteItem: React.FC<ComponentPaletteItemProps> = ({
   const [isHovered, setIsHovered] = useState(false)
   const [showTooltipState, setShowTooltipState] = useState(false)
   const dragHandlers = usePaletteDraggable(type)
+  const { cancelDrag } = useDragAndDrop()
   const dragContext = useDragContext()
   const itemRef = useRef<HTMLDivElement>(null)
   const tooltipTimeoutRef = useRef<NodeJS.Timeout>()
@@ -164,8 +165,30 @@ export const ComponentPaletteItem: React.FC<ComponentPaletteItemProps> = ({
         onMouseLeave={handleMouseLeave}
         onKeyDown={handleKeyDown}
         onFocus={handleFocus}
-        onClick={() => !disabled && onSelect?.()}
-        onDoubleClick={() => !disabled && onAdd()}
+        onClick={_event => {
+          console.log('🎯 DEBUG: Palette item clicked', type)
+          if (!disabled) {
+            onSelect?.()
+          }
+        }}
+        onDoubleClick={event => {
+          console.log('🎯 DEBUG: Palette item double-clicked', type)
+          if (!disabled) {
+            event.preventDefault()
+            event.stopPropagation()
+
+            // Cancel any active drag operation immediately
+            if (dragContext.state !== 'idle') {
+              console.log(
+                '🎯 DEBUG: Cancelling active drag operation due to double-click'
+              )
+              cancelDrag()
+            }
+
+            // Add the component
+            onAdd()
+          }
+        }}
         tabIndex={disabled ? -1 : 0}
         role="button"
         aria-label={`Add ${label} component`}

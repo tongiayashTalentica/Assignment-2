@@ -4,7 +4,7 @@ import { CanvasPanel } from '@/components/layout/CanvasPanel'
 import { ComponentType } from '@/types'
 
 // Mock store hooks
-jest.mock('@/store/simple', () => ({
+jest.mock('@/store', () => ({
   useComponents: () =>
     new Map([
       [
@@ -31,13 +31,30 @@ jest.mock('@/store/simple', () => ({
       ],
     ]),
   useSelectedComponents: () => [],
+  useDragContext: () => ({
+    state: 'idle',
+    draggedComponent: null,
+    dragOffset: { x: 0, y: 0 },
+    dragStartPosition: { x: 0, y: 0 },
+  }),
+  useCanvas: () => ({
+    zoom: 1,
+    dimensions: { width: 1200, height: 800 },
+    grid: { visible: true, size: 20, snapToGrid: true },
+    boundaries: { minX: 0, minY: 0, maxX: 1200, maxY: 800 },
+    viewport: { x: 0, y: 0, width: 1200, height: 800 },
+  }),
   useComponentActions: () => ({
     selectComponent: jest.fn(),
     clearSelection: jest.fn(),
     removeComponent: jest.fn(),
   }),
-  useDragContext: () => ({
-    state: 'idle',
+  useCanvasActions: () => ({
+    setZoom: jest.fn(),
+    updateGrid: jest.fn(),
+    updateCanvasDimensions: jest.fn(),
+    updateViewport: jest.fn(),
+    setBoundaries: jest.fn(),
   }),
 }))
 
@@ -76,7 +93,7 @@ describe('CanvasPanel', () => {
 
   it('shows empty state when no components', () => {
     // Mock empty components
-    jest.doMock('@/store/simple', () => ({
+    jest.doMock('@/store', () => ({
       useComponents: () => new Map(),
       useSelectedComponents: () => [],
       useComponentActions: () => ({
@@ -95,7 +112,7 @@ describe('CanvasPanel', () => {
   it('handles background click to clear selection', () => {
     const mockClearSelection = jest.fn()
 
-    jest.doMock('@/store/simple', () => ({
+    jest.doMock('@/store', () => ({
       useComponents: () => new Map(),
       useSelectedComponents: () => [],
       useComponentActions: () => ({
@@ -126,7 +143,7 @@ describe('CanvasPanel', () => {
 
   it('handles drag state styling', () => {
     // Mock dragging state
-    jest.doMock('@/store/simple', () => ({
+    jest.doMock('@/store', () => ({
       useComponents: () => new Map(),
       useSelectedComponents: () => [],
       useComponentActions: () => ({

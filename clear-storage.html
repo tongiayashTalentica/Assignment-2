@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Aura Editor Storage</title>
+</head>
+<body>
+    <h2>Clear Aura Editor Storage</h2>
+    <button onclick="clearStorage()">Clear All Storage Data</button>
+    <div id="status"></div>
+    
+    <script>
+        function clearStorage() {
+            try {
+                // Clear localStorage items related to Aura Editor
+                const keys = Object.keys(localStorage);
+                const auraKeys = keys.filter(key => 
+                    key.includes('aura-editor') || 
+                    key.includes('aura-project') || 
+                    key.includes('zustand')
+                );
+                
+                auraKeys.forEach(key => {
+                    localStorage.removeItem(key);
+                    console.log('Removed:', key);
+                });
+                
+                // Also clear sessionStorage
+                const sessionKeys = Object.keys(sessionStorage);
+                const auraSessionKeys = sessionKeys.filter(key => 
+                    key.includes('aura-editor') || 
+                    key.includes('aura-project')
+                );
+                
+                auraSessionKeys.forEach(key => {
+                    sessionStorage.removeItem(key);
+                    console.log('Removed from session:', key);
+                });
+                
+                document.getElementById('status').innerHTML = 
+                    `<p style="color: green;">Cleared ${auraKeys.length} localStorage items and ${auraSessionKeys.length} sessionStorage items.</p>
+                     <p>Now refresh your Aura Editor page (localhost:3000)</p>`;
+            } catch (error) {
+                document.getElementById('status').innerHTML = 
+                    `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Show current storage items on load
+        window.onload = function() {
+            const keys = Object.keys(localStorage);
+            const auraKeys = keys.filter(key => 
+                key.includes('aura-editor') || 
+                key.includes('aura-project') || 
+                key.includes('zustand')
+            );
+            
+            if (auraKeys.length > 0) {
+                document.getElementById('status').innerHTML = 
+                    `<p>Found ${auraKeys.length} Aura Editor storage items:</p>
+                     <ul>${auraKeys.map(key => `<li>${key}</li>`).join('')}</ul>`;
+            } else {
+                document.getElementById('status').innerHTML = 
+                    `<p>No Aura Editor storage items found.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -59,7 +59,7 @@ jest.mock('@/components/ui/ComponentPreview', () => ({
 }))
 
 // Mock all store hooks with reactive state
-jest.mock('@/store/simple', () => {
+jest.mock('@/store', () => {
   let currentDragState = 'idle'
   const currentComponents = new Map()
   let currentSelectedIds: string[] = []
@@ -145,8 +145,17 @@ jest.mock('@/store/simple', () => {
     useCanvas: () => ({
       boundaries: { minX: 0, minY: 0, maxX: 1200, maxY: 800 },
       grid: { snapToGrid: false, size: 20 },
+      dimensions: { width: 1200, height: 800 },
+      zoom: 1,
     }),
     useComponentActions: () => mockActions,
+    useCanvasActions: () => ({
+      setZoom: jest.fn(),
+      updateGrid: jest.fn(),
+      updateCanvasDimensions: jest.fn(),
+      updateViewport: jest.fn(),
+      setBoundaries: jest.fn(),
+    }),
     useUIActions: () => mockActions,
   }
 })

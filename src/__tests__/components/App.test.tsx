@@ -39,6 +39,36 @@ jest.mock('@/store', () => ({
     resizeComponent: jest.fn(),
     reorderComponent: jest.fn(),
   })),
+  useDragContext: jest.fn(() => ({
+    state: 'idle',
+    draggedComponent: null,
+    startPosition: { x: 0, y: 0 },
+    currentPosition: { x: 0, y: 0 },
+    dragOffset: { x: 0, y: 0 },
+    isDragValid: false,
+    dragStartPosition: { x: 0, y: 0 },
+    performanceData: null,
+  })),
+  useCanvas: jest.fn(() => ({
+    boundaries: { minX: 0, minY: 0, maxX: 1200, maxY: 800 },
+    grid: { snapToGrid: false, size: 20 },
+    dimensions: { width: 1200, height: 800 },
+    zoom: 1,
+    canUndo: false,
+    canRedo: false,
+  })),
+  useCanvasActions: jest.fn(() => ({
+    setZoom: jest.fn(),
+    updateGrid: jest.fn(),
+    updateCanvasDimensions: jest.fn(),
+    updateViewport: jest.fn(),
+    setBoundaries: jest.fn(),
+  })),
+  useUIActions: jest.fn(() => ({
+    startDrag: jest.fn(),
+    updateDrag: jest.fn(),
+    endDrag: jest.fn(),
+  })),
 }))
 
 describe('App Component', () => {
