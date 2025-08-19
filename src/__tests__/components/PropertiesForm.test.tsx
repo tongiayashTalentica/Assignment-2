@@ -5,9 +5,28 @@ import { ComponentType } from '@/types'
 
 // Mock the store hooks
 const mockUpdateComponent = jest.fn()
+const mockRecordUpdate = jest.fn()
+
 jest.mock('@/store', () => ({
   useComponentActions: () => ({
     updateComponent: mockUpdateComponent,
+  }),
+}))
+
+// Mock the debounce hooks
+jest.mock('@/hooks/useDebounce', () => ({
+  useBatchedPropertyUpdates: (props: any, updateFn: any, _delay: number) => ({
+    props,
+    updateProperty: (key: string, value: any) => {
+      // Immediately call updateFn to simulate the debounced behavior
+      updateFn({ [key]: value })
+    },
+    isUpdating: false,
+  }),
+  usePropertyUpdatePerformance: () => ({
+    averageUpdateTime: 50,
+    totalUpdates: 10,
+    recordUpdate: mockRecordUpdate,
   }),
 }))
 
@@ -38,8 +57,16 @@ describe('PropertiesForm', () => {
   it('displays text-specific properties for TEXT components', () => {
     render(<PropertiesForm component={mockComponent} />)
 
+    // Content field
     expect(screen.getByDisplayValue('Test Text')).toBeInTheDocument()
-    expect(screen.getByDisplayValue('16')).toBeInTheDocument()
+
+    // Font size - check the number input specifically (our Slider has both range and number)
+    const fontSizeNumberInput = screen.getByRole('spinbutton', {
+      name: /font size/i,
+    })
+    expect(fontSizeNumberInput).toHaveValue(16)
+
+    // Color field
     expect(screen.getByDisplayValue('#000000')).toBeInTheDocument()
   })
 
@@ -59,8 +86,12 @@ describe('PropertiesForm', () => {
   it('handles font size updates for TEXT components', async () => {
     render(<PropertiesForm component={mockComponent} />)
 
-    const fontSizeInput = screen.getByDisplayValue('16')
+    // Target the number input specifically from our Slider component
+    const fontSizeInput = screen.getByRole('spinbutton', { name: /font size/i })
     fireEvent.change(fontSizeInput, { target: { value: '18' } })
+
+    // Trigger blur to actually call onChange in our Slider component
+    fireEvent.blur(fontSizeInput)
 
     await waitFor(() => {
       expect(mockUpdateComponent).toHaveBeenCalledWith('test-component', {
@@ -136,19 +167,28 @@ describe('PropertiesForm', () => {
     render(<PropertiesForm component={textareaComponent} />)
 
     expect(screen.getByDisplayValue('Some text content')).toBeInTheDocument()
-    expect(screen.getByDisplayValue('14')).toBeInTheDocument()
+
+    // Check font size using the number input from our Slider component
+    const fontSizeNumberInput = screen.getByRole('spinbutton', {
+      name: /font size/i,
+    })
+    expect(fontSizeNumberInput).toHaveValue(14)
   })
 
   it('validates numeric inputs', async () => {
     render(<PropertiesForm component={mockComponent} />)
 
-    const fontSizeInput = screen.getByDisplayValue('16')
+    // Target the number input specifically from our Slider component
+    const fontSizeInput = screen.getByRole('spinbutton', { name: /font size/i })
     fireEvent.change(fontSizeInput, { target: { value: 'invalid' } })
 
-    // Should not call update with invalid value - NaN becomes 0
+    // Trigger blur to actually call onChange in our Slider component
+    fireEvent.blur(fontSizeInput)
+
+    // Invalid input gets constrained to minimum value (8)
     await waitFor(() => {
       expect(mockUpdateComponent).toHaveBeenCalledWith('test-component', {
-        props: { ...mockComponent.props, fontSize: 0 },
+        props: { ...mockComponent.props, fontSize: 8 },
       })
     })
   })
@@ -156,8 +196,18 @@ describe('PropertiesForm', () => {
   it('handles font weight updates for TEXT components', async () => {
     render(<PropertiesForm component={mockComponent} />)
 
-    const fontWeightSelect = screen.getByDisplayValue('Normal')
-    fireEvent.change(fontWeightSelect, { target: { value: '700' } })
+    // Our ButtonGroup component shows "Normal" as one of the button options
+    // Find the Normal button (should be active by default since fontWeight is 400)
+    const normalButton = screen.getByRole('button', {
+      name: /normal font weight/i,
+    })
+    expect(normalButton).toBeInTheDocument()
+    expect(normalButton).toHaveAttribute('aria-pressed', 'true')
+
+    // Find and click "Bold" button (should correspond to 700)
+    const boldButton = screen.getByRole('button', { name: /bold font weight/i })
+    expect(boldButton).toBeInTheDocument()
+    fireEvent.click(boldButton)
 
     await waitFor(() => {
       expect(mockUpdateComponent).toHaveBeenCalledWith('test-component', {

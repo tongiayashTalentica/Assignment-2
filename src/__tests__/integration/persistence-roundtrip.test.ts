@@ -1,4 +1,4 @@
-import { useAppStore } from '@/store'
+import { useAppStore } from '../../store/index'
 import { ComponentFactory } from '@/utils/componentFactory'
 import { ComponentType } from '@/types'
 

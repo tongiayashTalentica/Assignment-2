@@ -17,6 +17,7 @@ const mockDragContext = {
   targetElement: null,
   dragOffset: { x: 0, y: 0 },
   isDragValid: false,
+  performanceData: null,
 }
 
 const mockCanvas = {

@@ -23,7 +23,7 @@ export const PaletteCategory: React.FC<PaletteCategoryProps> = ({
   onComponentAdd,
   onComponentSelect,
   onToggleCollapse,
-  showDescriptions = true,
+  showDescriptions: _showDescriptions = true,
 }) => {
   const [isHovered, setIsHovered] = useState(false)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -156,21 +156,6 @@ export const PaletteCategory: React.FC<PaletteCategoryProps> = ({
         </span>
       </div>
 
-      {/* Category Description (when expanded and showing descriptions) */}
-      {!category.isCollapsed && showDescriptions && (
-        <div
-          style={{
-            fontSize: '12px',
-            color: '#6b7280',
-            marginBottom: '8px',
-            paddingLeft: '32px', // Align with components
-            fontStyle: 'italic',
-          }}
-        >
-          {category.description}
-        </div>
-      )}
-
       {/* Category Content */}
       <div
         id={`category-${category.id}-content`}
@@ -185,7 +170,7 @@ export const PaletteCategory: React.FC<PaletteCategoryProps> = ({
                 key={type}
                 type={type}
                 label={metadata.label}
-                description={showDescriptions ? metadata.description : ''}
+                description=""
                 category={category.id}
                 onAdd={() => onComponentAdd(type)}
                 onSelect={() => onComponentSelect(type)}

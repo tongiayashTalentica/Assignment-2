@@ -9,6 +9,17 @@ import App from '@/App'
 
 // Mock the store to avoid complex dependencies
 jest.mock('@/store', () => ({
+  useAppStore: jest.fn(selector =>
+    selector
+      ? selector({
+          application: {
+            persistence: {
+              currentProject: null,
+            },
+          },
+        })
+      : {}
+  ),
   useLayout: jest.fn(() => ({
     leftPanelWidth: 20,
     centerPanelWidth: 60,
@@ -68,6 +79,27 @@ jest.mock('@/store', () => ({
     startDrag: jest.fn(),
     updateDrag: jest.fn(),
     endDrag: jest.fn(),
+  })),
+  usePersistenceActions: jest.fn(() => ({
+    saveProject: jest.fn(),
+    loadProject: jest.fn(),
+    createProject: jest.fn(),
+    deleteProject: jest.fn(),
+    duplicateProject: jest.fn(),
+    setAutoSave: jest.fn(),
+    setAutoSaveInterval: jest.fn(),
+    exportProject: jest.fn(),
+    importProject: jest.fn(),
+  })),
+  usePersistenceService: jest.fn(() => ({
+    saveProject: jest.fn(),
+    loadProject: jest.fn(),
+    createProject: jest.fn(),
+    deleteProject: jest.fn(),
+    duplicateProject: jest.fn(),
+    listProjects: jest.fn(),
+    getStorageInfo: jest.fn(),
+    checkStorageWarnings: jest.fn(() => Promise.resolve([])),
   })),
 }))
 

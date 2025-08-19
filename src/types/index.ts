@@ -351,6 +351,30 @@ export interface ProjectMetadata {
   updatedAt: Date
   size: number
   componentCount: number
+  tags?: string[]
+}
+
+// Persistence-specific types
+export interface UserSettings {
+  theme: 'light' | 'dark'
+  language: string
+  autoSave: boolean
+  autoSaveInterval: number
+  showGrid: boolean
+  snapToGrid: boolean
+  showRulers: boolean
+  maxHistorySize: number
+  defaultCanvasSize: CanvasDimensions
+  performanceMode: boolean
+}
+
+export interface StorageMetadata {
+  version: string
+  storageUsage: number
+  availableSpace: number
+  totalProjects: number
+  lastCleanup: Date
+  keyCount: number
 }
 
 // Main application state interface

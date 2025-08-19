@@ -1,0 +1,461 @@
+/* Base control styles */
+.label {
+  font-size: 12px;
+  color: var(--color-text-light);
+  font-weight: 500;
+  margin-bottom: 4px;
+  display: block;
+}
+
+/* Color Picker */
+.colorPicker {
+  position: relative;
+}
+
+.colorPickerContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.colorSwatch {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.colorSwatch:hover:not(:disabled) {
+  border-color: var(--color-primary);
+}
+
+.colorSwatch:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.colorSwatchInner {
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+}
+
+.colorInput {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 14px;
+  font-family: monospace;
+}
+
+.colorInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.colorPickerPopup {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 12px;
+  margin-top: 4px;
+  min-width: 200px;
+}
+
+.colorPickerNative {
+  width: 100%;
+  height: 40px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.colorPresets {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.colorPreset {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.colorPreset:hover {
+  border-color: var(--color-primary);
+  transform: scale(1.05);
+}
+
+/* Slider */
+.slider {
+  width: 100%;
+}
+
+.sliderContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sliderTrack {
+  flex: 1;
+  position: relative;
+}
+
+.sliderInput {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-border);
+  appearance: none;
+  cursor: pointer;
+}
+
+.sliderInput::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.sliderInput::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.sliderInput::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  border: none;
+}
+
+.sliderInput:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sliderNumericInput {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 60px;
+}
+
+.numericInput {
+  width: 60px;
+  padding: 4px 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 14px;
+  text-align: center;
+}
+
+.numericInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.unit {
+  font-size: 12px;
+  color: var(--color-text-light);
+  font-weight: 500;
+}
+
+/* Button Group */
+.buttonGroup {
+  width: 100%;
+}
+
+.buttonGroupContent {
+  display: flex;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-surface);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.buttonGroupDefault {
+  /* Default size */
+}
+
+.buttonGroupCompact .buttonGroupOption {
+  padding: 6px 8px;
+  font-size: 12px;
+}
+
+.buttonGroupOption {
+  flex: 1;
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-right: 1px solid var(--color-border);
+  min-height: 32px;
+}
+
+.buttonGroupOption:last-child {
+  border-right: none;
+}
+
+.buttonGroupOption:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+}
+
+.buttonGroupOption:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.buttonGroupOptionActive {
+  background: var(--color-primary);
+  color: white;
+  font-weight: 600;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.buttonGroupOptionActive:hover {
+  background: var(--color-primary-dark);
+}
+
+.buttonGroupIcon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.buttonGroupLabel {
+  line-height: 1;
+}
+
+/* Dropdown */
+.dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdownContainer {
+  position: relative;
+}
+
+.dropdownTrigger {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.dropdownTrigger:hover:not(:disabled) {
+  border-color: var(--color-primary);
+}
+
+.dropdownTrigger:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.dropdownTriggerOpen {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.dropdownTriggerDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dropdownValue {
+  flex: 1;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdownArrow {
+  font-size: 12px;
+  transition: transform 0.2s ease;
+  margin-left: 8px;
+}
+
+.dropdownArrowOpen {
+  transform: rotate(180deg);
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-top: 4px;
+  max-height: 200px;
+  overflow: hidden;
+}
+
+.dropdownSearch {
+  padding: 8px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dropdownSearchInput {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 14px;
+}
+
+.dropdownSearchInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.dropdownOptions {
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.dropdownOption {
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.2s ease;
+  text-align: left;
+}
+
+.dropdownOption:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+}
+
+.dropdownOption:focus {
+  outline: none;
+  background: var(--color-surface-hover);
+}
+
+.dropdownOptionSelected {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.dropdownOptionDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dropdownOptionContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dropdownOptionLabel {
+  font-weight: 500;
+}
+
+.dropdownOptionDescription {
+  font-size: 12px;
+  color: var(--color-text-light);
+}
+
+.dropdownOptionCheck {
+  color: var(--color-primary);
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+.dropdownNoOptions {
+  padding: 12px;
+  text-align: center;
+  color: var(--color-text-light);
+  font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .colorPickerPopup {
+    right: 0;
+    left: auto;
+    min-width: 180px;
+  }
+
+  .sliderNumericInput {
+    min-width: 50px;
+  }
+
+  .numericInput {
+    width: 50px;
+    font-size: 12px;
+  }
+
+  .buttonGroupOption {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+}

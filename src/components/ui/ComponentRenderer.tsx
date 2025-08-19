@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef } from 'react'
 import { BaseComponent, ComponentType, DragState } from '@/types'
 import { useComponentActions, useDragContext } from '@/store'
 import { useCanvasDraggable } from '@/hooks/useDragAndDrop'
+import { InlineTextEditor } from './InlineTextEditor'
 
 interface Props {
   component: BaseComponent
@@ -21,6 +22,7 @@ export const ComponentRenderer = React.memo(
     const { id, type, position, dimensions, props } = component
     const [isHovered, setIsHovered] = useState(false)
     const [isResizing, setIsResizing] = useState(false)
+    const [isTextEditing, setIsTextEditing] = useState(false)
     const componentRef = useRef<HTMLDivElement>(null)
 
     const dragHandlers = useCanvasDraggable(component)
@@ -157,14 +159,7 @@ export const ComponentRenderer = React.memo(
       justifyContent: type === ComponentType.TEXTAREA ? 'flex-start' : 'center',
       padding: type === ComponentType.BUTTON ? (props as any).padding : 0,
       overflow: 'visible', // Changed to show resize handles
-      background:
-        type === ComponentType.BUTTON
-          ? (props as any).backgroundColor
-          : isDragging
-            ? 'rgba(59, 130, 246, 0.1)'
-            : isHovered
-              ? 'rgba(59, 130, 246, 0.05)'
-              : 'transparent',
+      // No background set here - each component type will set its own
       color: (props as any).color || (props as any).textColor || '#000',
       fontSize: (props as any).fontSize || 16,
       fontWeight: (props as any).fontWeight || 400,
@@ -197,8 +192,8 @@ export const ComponentRenderer = React.memo(
     const handleClick = (e: React.MouseEvent) => {
       e.stopPropagation()
 
-      // Don't handle selection during drag operations
-      if (dragContext.state !== 'idle') {
+      // Don't handle selection during drag operations or text editing
+      if (dragContext.state !== 'idle' || isTextEditing) {
         return
       }
 
@@ -206,6 +201,22 @@ export const ComponentRenderer = React.memo(
       selectComponent(id)
       focusComponent(id)
     }
+
+    const handleDoubleClick = useCallback(
+      (e: React.MouseEvent) => {
+        e.stopPropagation()
+
+        // Only enable text editing for text components when not dragging
+        if (
+          (type === ComponentType.TEXT || type === ComponentType.TEXTAREA) &&
+          dragContext.state === 'idle' &&
+          !isResizing
+        ) {
+          setIsTextEditing(true)
+        }
+      },
+      [type, dragContext.state, isResizing]
+    )
 
     const handleMouseEnter = useCallback(() => {
       if (dragContext.state === 'idle') {
@@ -356,6 +367,7 @@ export const ComponentRenderer = React.memo(
       ref: componentRef,
       style,
       onClick: handleClick,
+      onDoubleClick: handleDoubleClick,
       onMouseEnter: handleMouseEnter,
       onMouseLeave: handleMouseLeave,
       'data-testid': `component-${id}`,
@@ -480,66 +492,164 @@ export const ComponentRenderer = React.memo(
     switch (type) {
       case ComponentType.TEXT:
         return (
-          <div {...baseProps}>
+          <div
+            {...baseProps}
+            style={{
+              ...baseProps.style,
+              fontSize: `${(props as any).fontSize || 16}px`,
+              fontWeight: (props as any).fontWeight || 400,
+              color: (props as any).color || '#000000',
+              fontFamily: 'Arial, sans-serif',
+              lineHeight: '1.4',
+              padding: '4px 8px',
+              boxSizing: 'border-box',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              justifyContent: 'flex-start',
+              background: isDragging
+                ? 'rgba(59, 130, 246, 0.1)'
+                : isHovered
+                  ? 'rgba(59, 130, 246, 0.05)'
+                  : 'transparent',
+            }}
+          >
             {infoTooltip}
             {draggableIndicator}
             {layerControls}
-            {(props as any).content}
+            {(props as any).content || 'Text'}
+
+            <InlineTextEditor
+              component={component}
+              isActive={isTextEditing}
+              onActivate={() => setIsTextEditing(true)}
+              onDeactivate={() => setIsTextEditing(false)}
+            />
           </div>
         )
       case ComponentType.TEXTAREA:
         return (
-          <div {...baseProps}>
+          <div
+            {...baseProps}
+            style={{
+              ...baseProps.style,
+              whiteSpace: 'pre-wrap',
+              padding: '8px',
+              fontSize: `${(props as any).fontSize || 16}px`,
+              color: (props as any).color || '#000000',
+              textAlign: (props as any).textAlign || 'left',
+              fontFamily: 'Arial, sans-serif',
+              lineHeight: '1.4',
+              overflow: 'auto',
+              boxSizing: 'border-box',
+              justifyContent: 'flex-start',
+              alignItems: 'flex-start',
+              background: isDragging
+                ? 'rgba(59, 130, 246, 0.1)'
+                : isHovered
+                  ? 'rgba(59, 130, 246, 0.05)'
+                  : 'transparent',
+            }}
+          >
             {infoTooltip}
             {draggableIndicator}
             {layerControls}
-            <div style={{ whiteSpace: 'pre-wrap', padding: 8, width: '100%' }}>
-              {(props as any).content}
-            </div>
+            {(props as any).content || 'Multiline text'}
+
+            <InlineTextEditor
+              component={component}
+              isActive={isTextEditing}
+              onActivate={() => setIsTextEditing(true)}
+              onDeactivate={() => setIsTextEditing(false)}
+            />
           </div>
         )
       case ComponentType.IMAGE:
         return (
-          <div {...baseProps}>
+          <div
+            {...baseProps}
+            style={{
+              ...baseProps.style,
+              borderRadius: `${(props as any).borderRadius || 0}px`,
+              // Add overlay for drag/hover states
+              boxShadow: isDragging
+                ? 'inset 0 0 0 2px rgba(59, 130, 246, 0.8)'
+                : isHovered
+                  ? 'inset 0 0 0 1px rgba(59, 130, 246, 0.5)'
+                  : 'none',
+              overflow: 'hidden',
+            }}
+          >
+            <img
+              src={(props as any).src || 'https://via.placeholder.com/200'}
+              alt={(props as any).alt || 'Image'}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: (props as any).objectFit || 'cover',
+                borderRadius: `${(props as any).borderRadius || 0}px`,
+                display: 'block',
+              }}
+            />
             {infoTooltip}
             {draggableIndicator}
             {layerControls}
             {resizeHandles}
-            <img
-              src={(props as any).src}
-              alt={(props as any).alt || ''}
-              draggable={false} // Explicitly disable native drag
-              onDragStart={e => e.preventDefault()} // Prevent any drag events
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: (props as any).objectFit,
-                pointerEvents: 'none', // Prevent image drag interference
-                userSelect: 'none', // Prevent selection
-              }}
-            />
           </div>
         )
       case ComponentType.BUTTON:
         return (
-          <div {...baseProps}>
+          <div
+            {...baseProps}
+            style={{
+              ...baseProps.style,
+              backgroundColor: (props as any).backgroundColor || '#1f2937',
+              color: (props as any).textColor || '#ffffff',
+              fontSize: `${(props as any).fontSize || 16}px`,
+              fontFamily: 'Arial, sans-serif',
+              fontWeight: 500,
+              borderRadius: `${(props as any).borderRadius || 6}px`,
+              border: 'none',
+              padding: `${(props as any).padding || 12}px`,
+              boxSizing: 'border-box',
+              cursor: isDragging ? 'grabbing' : 'pointer',
+              textDecoration: 'none',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+            onClick={e => {
+              e.preventDefault()
+
+              // Check if user wants to follow the link (cmd/ctrl + click)
+              if (e.metaKey || e.ctrlKey) {
+                const url = (props as any).url
+                if (url && typeof url === 'string') {
+                  // Open link in new tab for external URLs
+                  if (url.startsWith('http://') || url.startsWith('https://')) {
+                    window.open(url, '_blank', 'noopener,noreferrer')
+                  } else {
+                    // Handle relative URLs
+                    window.open(url, '_blank')
+                  }
+                }
+              } else {
+                // Normal click - handle component selection
+                e.stopPropagation()
+
+                // Don't handle selection during drag operations
+                if (dragContext.state !== DragState.IDLE) {
+                  return
+                }
+
+                onSelect(id)
+                selectComponent(id)
+                focusComponent(id)
+              }
+            }}
+          >
             {infoTooltip}
             {draggableIndicator}
             {layerControls}
-            <a
-              href={(props as any).url}
-              draggable={false} // Disable native drag
-              onDragStart={e => e.preventDefault()} // Prevent drag events
-              style={{
-                textDecoration: 'none',
-                color: 'inherit',
-                pointerEvents: isDragging ? 'none' : 'auto',
-                userSelect: 'none', // Prevent text selection
-              }}
-              onClick={e => e.preventDefault()}
-            >
-              {(props as any).label}
-            </a>
+            {(props as any).label || 'Button'}
           </div>
         )
       default:

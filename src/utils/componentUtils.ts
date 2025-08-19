@@ -563,11 +563,14 @@ export const getDefaultComponentProps = (
 
     case ComponentType.BUTTON:
       return {
-        label: 'Button',
-        variant: 'primary',
-        size: 'medium',
-        disabled: false,
-        onClick: null,
+        kind: 'button',
+        url: 'https://example.com',
+        label: 'Click Me',
+        fontSize: 16,
+        padding: 12,
+        backgroundColor: '#1f2937',
+        textColor: '#ffffff',
+        borderRadius: 6,
       }
 
     case ComponentType.IMAGE:

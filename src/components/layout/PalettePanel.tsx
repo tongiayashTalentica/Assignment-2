@@ -240,7 +240,7 @@ export const PalettePanel = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            marginBottom: '8px',
+            marginBottom: '16px',
           }}
         >
           <h2
@@ -253,25 +253,13 @@ export const PalettePanel = ({
           {dragContext?.state !== 'idle' && (
             <div
               style={{
-                fontSize: '12px',
-                color: '#059669',
-                fontWeight: 500,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
+                width: '6px',
+                height: '6px',
+                backgroundColor: '#10b981',
+                borderRadius: '50%',
+                animation: 'pulse 2s infinite',
               }}
-            >
-              <div
-                style={{
-                  width: '8px',
-                  height: '8px',
-                  backgroundColor: '#059669',
-                  borderRadius: '50%',
-                  animation: 'pulse 2s infinite',
-                }}
-              />
-              Dragging...
-            </div>
+            />
           )}
         </div>
 
@@ -288,13 +276,14 @@ export const PalettePanel = ({
             aria-describedby="search-help"
             style={{
               width: '100%',
-              padding: '8px 32px 8px 12px',
+              padding: '10px 36px 10px 14px',
               fontSize: '14px',
               border: '1px solid #d1d5db',
               borderRadius: '6px',
               backgroundColor: '#ffffff',
               outline: 'none',
               transition: 'border-color 0.2s ease',
+              lineHeight: '1.4',
             }}
             onFocus={e => {
               e.target.style.borderColor = '#3b82f6'
@@ -365,21 +354,19 @@ export const PalettePanel = ({
         </div>
 
         {/* Search Results Summary */}
-        {paletteState.isSearchActive && (
+        {paletteState.isSearchActive && hasNoSearchResults && (
           <div
             id="search-help"
             role="status"
             aria-live="polite"
             style={{
-              fontSize: '12px',
-              color: '#6b7280',
-              marginTop: '4px',
+              fontSize: '11px',
+              color: '#9ca3af',
+              marginTop: '2px',
               textAlign: 'center',
             }}
           >
-            {hasNoSearchResults
-              ? 'No matching components'
-              : `${filteredComponents.length} component${filteredComponents.length === 1 ? '' : 's'} found`}
+            No results
           </div>
         )}
       </div>
@@ -399,18 +386,6 @@ export const PalettePanel = ({
             {/* Categories */}
             {!paletteState.isSearchActive && (
               <>
-                <div
-                  style={{
-                    fontSize: '12px',
-                    color: '#6b7280',
-                    marginBottom: '12px',
-                    textAlign: 'center',
-                    fontStyle: 'italic',
-                  }}
-                >
-                  Drag components to canvas or double-click to add
-                </div>
-
                 {categories.map(category => (
                   <PaletteCategory
                     key={category.id}
@@ -483,74 +458,32 @@ export const PalettePanel = ({
               </div>
             )}
 
-            {/* Performance Debug Info */}
-            {dragContext?.performanceData && (
-              <div
-                style={{
-                  fontSize: '11px',
-                  color: '#9ca3af',
-                  padding: '8px',
-                  backgroundColor: '#f9fafb',
-                  borderRadius: '4px',
-                  margin: '8px',
-                  border: '1px solid #f3f4f6',
-                }}
-              >
-                <div
-                  style={{
-                    fontWeight: 600,
-                    marginBottom: '4px',
-                    color: '#6b7280',
-                  }}
-                >
-                  Drag Performance
-                </div>
-                <div>Frames: {dragContext.performanceData.frameCount}</div>
-                <div>
-                  Avg Frame:{' '}
-                  {dragContext.performanceData.averageFrameTime.toFixed(2)}ms
-                </div>
-                <div>
-                  Memory:{' '}
-                  {(
-                    dragContext.performanceData.memoryUsage /
-                    1024 /
-                    1024
-                  ).toFixed(2)}
-                  MB
-                </div>
-              </div>
-            )}
-
             {/* Recent Components (when not searching) */}
             {!paletteState.isSearchActive &&
               paletteState.preferences.recentComponents.length > 0 && (
                 <div
                   style={{
-                    margin: '16px 8px 8px 8px',
-                    padding: '12px',
-                    backgroundColor: '#f8fafc',
-                    borderRadius: '6px',
-                    border: '1px solid #e2e8f0',
+                    margin: '12px 8px 4px 8px',
+                    padding: '8px',
+                    backgroundColor: '#f9fafb',
+                    borderRadius: '4px',
                   }}
                 >
                   <div
                     style={{
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      color: '#64748b',
-                      marginBottom: '8px',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
+                      fontSize: '11px',
+                      fontWeight: 500,
+                      color: '#6b7280',
+                      marginBottom: '6px',
                     }}
                   >
-                    Recently Used
+                    Recent
                   </div>
                   <div
-                    style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}
+                    style={{ display: 'flex', gap: '3px', flexWrap: 'wrap' }}
                   >
                     {paletteState.preferences.recentComponents
-                      .slice(0, 4)
+                      .slice(0, 3)
                       .map(type => {
                         const metadata = COMPONENT_METADATA[type]
                         return (
@@ -558,22 +491,20 @@ export const PalettePanel = ({
                             key={type}
                             onClick={() => handleAddComponent(type)}
                             style={{
-                              padding: '4px 8px',
-                              fontSize: '11px',
+                              padding: '3px 6px',
+                              fontSize: '10px',
                               backgroundColor: '#ffffff',
                               border: '1px solid #e2e8f0',
-                              borderRadius: '4px',
+                              borderRadius: '3px',
                               cursor: 'pointer',
-                              color: '#475569',
-                              transition: 'all 0.2s ease',
+                              color: '#6b7280',
+                              transition: 'all 0.15s ease',
                             }}
                             onMouseOver={e => {
                               e.currentTarget.style.backgroundColor = '#f1f5f9'
-                              e.currentTarget.style.borderColor = '#cbd5e1'
                             }}
                             onMouseOut={e => {
                               e.currentTarget.style.backgroundColor = '#ffffff'
-                              e.currentTarget.style.borderColor = '#e2e8f0'
                             }}
                             title={`Add ${metadata.label}`}
                           >

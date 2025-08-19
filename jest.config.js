@@ -3,6 +3,10 @@ export default {
   testEnvironment: "jsdom", 
   setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
   moduleNameMapper: {
+    "^@/hooks/useDragAndDrop$": "<rootDir>/src/__mocks__/useDragAndDrop.ts",
+    "^@/store$": "<rootDir>/src/__mocks__/store.ts", // Re-enabled for complete store mocking
+    "^@/services/persistence$": "<rootDir>/src/__mocks__/persistenceService.ts",
+    "^@/services/storage/(.*)$": "<rootDir>/src/__mocks__/persistenceService.ts",
     "^@/(.*)$": "<rootDir>/src/$1",
     "\\.(css|less|scss|sass)$": "identity-obj-proxy",
     "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "jest-transform-stub",

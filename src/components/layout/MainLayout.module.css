@@ -8,18 +8,105 @@
 .header {
   display: flex;
   align-items: center;
-  padding: var(--spacing-md) var(--spacing-lg);
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
   background-color: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
-  box-shadow: var(--shadow-sm);
   z-index: 10;
 }
 
 .title {
-  font-size: 1.5rem;
+  font-size: 1.125rem;
   font-weight: 600;
   color: var(--color-text);
   margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.historyControls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.historyButton {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s ease;
+  border-right: 1px solid var(--color-border);
+}
+
+.historyButton:last-child {
+  border-right: none;
+}
+
+.historyButton:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+}
+
+.historyButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.previewButton {
+  background: #059669;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.previewButton:hover {
+  background: #047857;
+}
+
+.currentProject {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.projectManagerButton {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.projectManagerButton:hover {
+  background: #2563eb;
 }
 
 .content {
@@ -33,7 +120,6 @@
 .rightPanel {
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--color-border);
   background-color: var(--color-background);
 }
 
@@ -45,13 +131,19 @@
 .centerPanel {
   flex: 1;
   min-width: 300px;
-  border-right: 1px solid var(--color-border);
 }
 
 .rightPanel {
   min-width: 200px;
   max-width: 400px;
-  border-right: none;
+}
+
+.leftPanel {
+  background-color: var(--color-surface);
+}
+
+.rightPanel {
+  background-color: var(--color-surface);
 }
 
 /* Responsive design */
@@ -59,7 +151,7 @@
   .content {
     flex-direction: column;
   }
-  
+
   .leftPanel,
   .centerPanel,
   .rightPanel {
@@ -67,23 +159,23 @@
     border-right: none;
     border-bottom: 1px solid var(--color-border);
   }
-  
+
   .rightPanel {
     border-bottom: none;
   }
-  
+
   .leftPanel {
     order: 1;
     max-height: 200px;
   }
-  
+
   .centerPanel {
     order: 2;
     flex: 1;
   }
-  
+
   .rightPanel {
     order: 3;
     max-height: 200px;
   }
-} 
+}

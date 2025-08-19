@@ -1,0 +1,152 @@
+.saveStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.statusButton:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border);
+}
+
+.statusButton:disabled {
+  cursor: not-allowed;
+}
+
+.statusIcon {
+  font-size: 10px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+}
+
+.statusText {
+  font-weight: 500;
+}
+
+/* Status States */
+.saving {
+  color: var(--color-warning);
+  border-color: var(--color-warning);
+  background: rgba(245, 158, 11, 0.05);
+}
+
+.saving .statusIcon {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.saved {
+  color: var(--color-success);
+}
+
+.saved .statusIcon {
+  color: var(--color-success);
+}
+
+.unsaved {
+  color: var(--color-error);
+  border-color: var(--color-error);
+  background: rgba(239, 68, 68, 0.05);
+  cursor: pointer;
+}
+
+.unsaved:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--color-error);
+}
+
+.unsaved .statusIcon {
+  color: var(--color-error);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Auto-save Indicator */
+.autoSaveIndicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--color-text-light);
+  padding: 2px 6px;
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+}
+
+.autoSaveIcon {
+  font-size: 10px;
+  animation: rotate 3s linear infinite;
+}
+
+.autoSaveText {
+  font-weight: 400;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .statusText {
+    display: none;
+  }
+
+  .autoSaveText {
+    display: none;
+  }
+
+  .statusButton {
+    padding: 6px;
+  }
+
+  .autoSaveIndicator {
+    padding: 4px;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .statusButton {
+    border-width: 2px;
+  }
+
+  .saving,
+  .unsaved {
+    border-width: 2px;
+    background: transparent;
+  }
+}

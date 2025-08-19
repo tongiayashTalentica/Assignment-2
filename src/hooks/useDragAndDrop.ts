@@ -256,20 +256,18 @@ export const useDragAndDrop = () => {
    */
   const handleDrop = useCallback(
     (dropEvent: { clientX: number; clientY: number; canvasRect?: DOMRect }) => {
-      console.log('🎯 DEBUG: handleDrop called', {
-        dragState: dragContext.state,
-        dropEvent,
-        draggedComponent: dragContext.draggedComponent,
-      })
-
+      // Early return for idle state - do nothing
       if (dragContext.state === DragState.IDLE) {
-        console.log('🎯 DEBUG: Drag state is IDLE, ignoring drop')
+        return
+      }
+
+      // Early return for canvas component drags - they are handled by useEffect
+      if (dragContext.state === DragState.DRAGGING_CANVAS_COMPONENT) {
         return
       }
 
       try {
         if (dragContext.state === DragState.DRAGGING_FROM_PALETTE) {
-          console.log('🎯 DEBUG: Processing palette drop')
           // Create new component from palette
           const componentType = dragContext.draggedComponent as ComponentType
           if (componentType && dropEvent.canvasRect) {
@@ -277,33 +275,23 @@ export const useDragAndDrop = () => {
               x: dropEvent.clientX - dropEvent.canvasRect.left,
               y: dropEvent.clientY - dropEvent.canvasRect.top,
             }
-            console.log('🎯 DEBUG: Canvas position calculated:', canvasPosition)
 
             const constrainedPosition = constrainPosition(canvasPosition)
-            console.log('🎯 DEBUG: Constrained position:', constrainedPosition)
 
             const newComponent = ComponentFactory.create(
               componentType,
               constrainedPosition
             )
-            console.log('🎯 DEBUG: Created component:', newComponent)
 
             addComponent(newComponent)
             selectComponent(newComponent.id)
-            console.log('🎯 DEBUG: Component added and selected')
-          } else {
-            console.log('🚨 DEBUG: Missing componentType or canvasRect:', {
-              componentType,
-              canvasRect: dropEvent.canvasRect,
-            })
           }
         }
         // Canvas component drops are handled by the useEffect above
       } catch (error) {
-        console.error('🚨 DEBUG: Error in handleDrop:', error)
+        console.error('Error in handleDrop:', error)
       } finally {
         if (dragContext.state === DragState.DRAGGING_FROM_PALETTE) {
-          console.log('🎯 DEBUG: Ending drag')
           endDrag()
         }
       }

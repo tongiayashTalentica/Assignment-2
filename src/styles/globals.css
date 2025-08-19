@@ -27,10 +27,14 @@ body {
   /* Colors */
   --color-primary: #3b82f6;
   --color-primary-hover: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-primary-light: #dbeafe;
   --color-secondary: #64748b;
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
+  --color-error-light: #fef2f2;
+  --color-error-dark: #b91c1c;
 
   /* Backgrounds */
   --color-background: #ffffff;

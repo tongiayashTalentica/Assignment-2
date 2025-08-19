@@ -34,23 +34,41 @@ export const CanvasPanel = React.memo(
       const handleKeyDown = (e: KeyboardEvent) => {
         if (!selected.length) return
 
+        // Check if user is typing in an input field - don't interfere
+        const activeElement = document.activeElement
+        const isTypingInInput =
+          activeElement &&
+          (activeElement.tagName === 'INPUT' ||
+            activeElement.tagName === 'TEXTAREA' ||
+            activeElement.contentEditable === 'true' ||
+            activeElement.getAttribute('role') === 'textbox')
+
         const selectedComponent = selected[0]
 
         switch (e.key) {
           case 'ArrowUp':
-            e.preventDefault()
-            selectComponent(selectedComponent.id, false)
+            if (!isTypingInInput) {
+              e.preventDefault()
+              selectComponent(selectedComponent.id, false)
+            }
             break
           case 'ArrowDown':
           case 'ArrowLeft':
           case 'ArrowRight':
-            e.preventDefault()
-            // Movement handled by existing drag system
+            if (!isTypingInInput) {
+              e.preventDefault()
+              // Movement handled by existing drag system
+            }
             break
           case 'Delete':
           case 'Backspace':
-            e.preventDefault()
-            selected.forEach((comp: BaseComponent) => removeComponent(comp.id))
+            // Only delete component if NOT typing in input field
+            if (!isTypingInInput) {
+              e.preventDefault()
+              selected.forEach((comp: BaseComponent) =>
+                removeComponent(comp.id)
+              )
+            }
             break
         }
       }

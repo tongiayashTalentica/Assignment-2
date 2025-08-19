@@ -1,0 +1,259 @@
+/* Inline Text Editor Styles */
+
+/* Activation overlay for non-active state */
+.activationOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  cursor: text;
+  z-index: 10;
+}
+
+/* Editor container */
+.editorContainer {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Editor content area */
+.editor {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  outline: none;
+  background: transparent;
+  resize: none;
+  overflow: auto;
+  min-height: 100%;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.singleLine {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.multiline {
+  white-space: pre-wrap;
+  overflow-y: auto;
+}
+
+/* Focus state */
+.editor:focus {
+  outline: none;
+}
+
+/* Controls */
+.editorControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  background: rgba(248, 250, 252, 0.95);
+  border-top: 1px solid var(--color-border);
+  gap: 8px;
+}
+
+.controlsLeft,
+.controlsRight {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Format buttons */
+.formatButton {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.formatButton:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
+}
+
+.formatButton:active {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+/* Action buttons */
+.actionButton {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.actionButton:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
+}
+
+.saveButton {
+  background: var(--color-success);
+  color: white;
+  border-color: var(--color-success);
+}
+
+.saveButton:hover {
+  background: #059669;
+  border-color: #059669;
+}
+
+/* Editor hints */
+.editorHints {
+  position: absolute;
+  bottom: -32px;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  text-align: center;
+  animation: fadeInUp 0.3s ease-out;
+  pointer-events: none;
+}
+
+.hint {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Selection styles */
+.editor::selection {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+.editor::-moz-selection {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+/* Scrollbar styling for multiline */
+.multiline::-webkit-scrollbar {
+  width: 6px;
+}
+
+.multiline::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.multiline::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.multiline::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-hover);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .editorControls {
+    padding: 4px 6px;
+    gap: 6px;
+  }
+
+  .formatButton,
+  .actionButton {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+
+  .editorHints {
+    font-size: 10px;
+    padding: 4px 6px;
+    bottom: -28px;
+  }
+
+  .hint {
+    /* Allow wrapping on small screens */
+    white-space: normal;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .editorContainer {
+    border-width: 3px;
+    background: white;
+  }
+
+  .formatButton,
+  .actionButton {
+    border-width: 2px;
+  }
+
+  .editorHints {
+    background: black;
+    color: white;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .editorContainer,
+  .editorHints {
+    animation: none;
+  }
+
+  .formatButton,
+  .actionButton {
+    transition: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .editorContainer {
+    display: none;
+  }
+}

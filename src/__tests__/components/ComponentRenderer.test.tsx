@@ -99,7 +99,10 @@ describe('ComponentRenderer', () => {
       />
     )
 
-    expect(screen.getByAltText('Test image')).toBeInTheDocument()
+    // Image now renders as actual img element for accessibility
+    const imageElement = screen.getByRole('img') as HTMLImageElement
+    expect(imageElement).toHaveAttribute('src', 'test.jpg')
+    expect(imageElement).toHaveAttribute('alt', 'Test image')
   })
 
   it('renders textarea component correctly', () => {

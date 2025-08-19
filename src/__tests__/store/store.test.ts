@@ -11,7 +11,7 @@ import {
   useUIActions,
   useHistoryActions,
   usePersistenceActions,
-} from '@/store'
+} from '../../store/index'
 import { ComponentType, PanelType, PreviewMode, ModalType } from '@/types'
 import { createComponent } from '@/utils/componentUtils'
 
